@@ -1,4 +1,4 @@
-﻿using login.Serial;
+using login.Serial;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -589,35 +589,68 @@ namespace login
 
         private void slipno_box_KeyDown(object sender, KeyEventArgs e)
         {
-            try
+            if (e.KeyCode == Keys.Enter)
             {
-                if (e.KeyCode == Keys.Enter)
+                e.SuppressKeyPress = true;
+                string searchSlip = slipno_box.Text.Trim();
+                if (string.IsNullOrEmpty(searchSlip))
                 {
-                    //MessageBox.Show("Press Enter");
-                    SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-                    SqlDataAdapter sda = new SqlDataAdapter("Select * from measure where slip_no='" + slipno_box.Text + "' ", db_connect);
-                    DataTable dt = new DataTable();
-                    sda.Fill(dt);
-                    Console.WriteLine("#" + dt.Rows[0][0]); // slip no
-                    Console.WriteLine("##" + dt.Rows[0][1]); //
-                    weight_box.Text = dt.Rows[0][1].ToString();
-                    tire_weight_box.Text = dt.Rows[0][2].ToString();
-                    net_weight_box.Text = dt.Rows[0][3].ToString();
-                    Vehical_box.Text = dt.Rows[0][4].ToString();
-                    Party_box.Text = dt.Rows[0][5].ToString();
-                    meterial_box.Text = dt.Rows[0][6].ToString();
-                    vechaltype_drop.Text = dt.Rows[0][7].ToString();
-                    charges_drop.Text = dt.Rows[0][8].ToString();
-                    date_box.Text = dt.Rows[0][9].ToString();
-                    remarks_box.Text = dt.Rows[0][10].ToString();
-                    tokenNo_box.Text = dt.Rows[0][14].ToString();
-                    mod_date.Text = dt.Rows[0][12].ToString();
-                    db_connect.Close();
+                    MessageBox.Show("Please enter a Slip No to search.", "Search Slip", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("exceptipon" + ex);
+
+                try
+                {
+                    using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                    {
+                        db_connect.Open();
+                        SqlDataAdapter sda = new SqlDataAdapter("SELECT * FROM measure WHERE slip_no = @slip_no", db_connect);
+                        sda.SelectCommand.Parameters.AddWithValue("@slip_no", searchSlip);
+                        DataTable dt = new DataTable();
+                        sda.Fill(dt);
+
+                        if (dt.Rows.Count > 0)
+                        {
+                            DataRow row = dt.Rows[0];
+                            slipno_box.Text = row["slip_no"].ToString().Trim();
+                            weight_box.Text = row["weight"] != DBNull.Value ? row["weight"].ToString().Trim() : "";
+                            tire_weight_box.Text = row["tire_weight"] != DBNull.Value ? row["tire_weight"].ToString().Trim() : "";
+                            net_weight_box.Text = row["net_weight"] != DBNull.Value ? row["net_weight"].ToString().Trim() : "";
+                            Vehical_box.Text = row["vehical_no"] != DBNull.Value ? row["vehical_no"].ToString().Trim() : "";
+                            Party_box.Text = row["party"] != DBNull.Value ? row["party"].ToString().Trim() : "";
+                            meterial_box.Text = row["meterial"] != DBNull.Value ? row["meterial"].ToString().Trim() : "";
+                            vechaltype_drop.Text = row["vehical_type"] != DBNull.Value ? row["vehical_type"].ToString().Trim() : "";
+                            charges_drop.Text = row["charges"] != DBNull.Value ? row["charges"].ToString().Trim() : "";
+                            date_box.Text = row["date"] != DBNull.Value ? row["date"].ToString().Trim() : "";
+                            remarks_box.Text = row["remarks"] != DBNull.Value ? row["remarks"].ToString().Trim() : "";
+                            mod_date.Text = row["mod_date"] != DBNull.Value ? row["mod_date"].ToString().Trim() : "";
+                            tokenNo_box.Text = row["token_no"] != DBNull.Value ? row["token_no"].ToString().Trim() : "";
+
+                            // Calculate Net Weight
+                            CalculateNetWeight();
+
+                            // Automatically suggest the next weighment mode for 2nd weight:
+                            if (!string.IsNullOrEmpty(tire_weight_box.Text) && string.IsNullOrEmpty(weight_box.Text))
+                            {
+                                radioButton2.Checked = true; // Set to Gross Weight
+                            }
+                            else if (!string.IsNullOrEmpty(weight_box.Text) && string.IsNullOrEmpty(tire_weight_box.Text))
+                            {
+                                radioButton1.Checked = true; // Set to Tare Weight
+                            }
+
+                            MessageBox.Show("Record loaded successfully for Slip No: " + searchSlip, "Slip Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No record found for Slip No: " + searchSlip, "Record Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error searching Slip No: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         private int calculate_netweight()
@@ -1549,7 +1582,7 @@ namespace login
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 40f));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 85f));
 
-            label10.Text = "Slip No";
+            label10.Text = "Slip No (Enter ↵)";
             label13.Text = "Challan / Token";
             label11.Text = "1st Wt Date";
             label12.Text = "2nd Wt Date";
@@ -1573,6 +1606,8 @@ namespace login
             slipno_box.BorderStyle = BorderStyle.FixedSingle;
             slipno_box.Dock = DockStyle.Fill;
             slipno_box.Margin = new Padding(4, 5, 8, 5);
+            slipno_box.ReadOnly = false;
+            slipno_box.TabIndex = 20;
 
             TextBox[] textboxes = { tokenNo_box, date_box, mod_date };
             foreach (var tb in textboxes)

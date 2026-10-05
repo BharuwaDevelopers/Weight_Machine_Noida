@@ -56,20 +56,8 @@ namespace login
             this.print_btn = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.mainContainer = new System.Windows.Forms.Panel();
-            this.heroScaleCard = new System.Windows.Forms.Panel();
-            this.digitalBezel = new System.Windows.Forms.Panel();
-            this.lblScaleStatus = new System.Windows.Forms.Label();
-            this.lblUnitKg = new System.Windows.Forms.Label();
-            this.cuttent_weight_box = new System.Windows.Forms.RichTextBox();
-            this.capturePanel = new System.Windows.Forms.Panel();
-            this.lblModeHeader = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
             this.twoColumnCards = new System.Windows.Forms.TableLayoutPanel();
             this.cardLeft = new System.Windows.Forms.Panel();
-            this.pnlLeftHeader = new System.Windows.Forms.Panel();
-            this.lblCardLeftTitle = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.weight_box = new System.Windows.Forms.TextBox();
@@ -85,9 +73,9 @@ namespace login
             this.meterial_box = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.remarks_box = new System.Windows.Forms.RichTextBox();
+            this.pnlLeftHeader = new System.Windows.Forms.Panel();
+            this.lblCardLeftTitle = new System.Windows.Forms.Label();
             this.cardRight = new System.Windows.Forms.Panel();
-            this.pnlRightHeader = new System.Windows.Forms.Panel();
-            this.lblCardRightTitle = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label10 = new System.Windows.Forms.Label();
             this.slipno_box = new System.Windows.Forms.TextBox();
@@ -101,6 +89,18 @@ namespace login
             this.vechaltype_drop = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.charges_drop = new System.Windows.Forms.ComboBox();
+            this.pnlRightHeader = new System.Windows.Forms.Panel();
+            this.lblCardRightTitle = new System.Windows.Forms.Label();
+            this.heroScaleCard = new System.Windows.Forms.Panel();
+            this.capturePanel = new System.Windows.Forms.Panel();
+            this.lblModeHeader = new System.Windows.Forms.Label();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
+            this.digitalBezel = new System.Windows.Forms.Panel();
+            this.lblScaleStatus = new System.Windows.Forms.Label();
+            this.lblUnitKg = new System.Windows.Forms.Label();
+            this.cuttent_weight_box = new System.Windows.Forms.RichTextBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.label14 = new System.Windows.Forms.Label();
             this.ref_slipNo_box = new System.Windows.Forms.TextBox();
@@ -113,16 +113,16 @@ namespace login
             this.bottomBar.SuspendLayout();
             this.actionButtonsPanel.SuspendLayout();
             this.mainContainer.SuspendLayout();
-            this.heroScaleCard.SuspendLayout();
-            this.digitalBezel.SuspendLayout();
-            this.capturePanel.SuspendLayout();
             this.twoColumnCards.SuspendLayout();
             this.cardLeft.SuspendLayout();
-            this.pnlLeftHeader.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.pnlLeftHeader.SuspendLayout();
             this.cardRight.SuspendLayout();
-            this.pnlRightHeader.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.pnlRightHeader.SuspendLayout();
+            this.heroScaleCard.SuspendLayout();
+            this.capturePanel.SuspendLayout();
+            this.digitalBezel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -137,7 +137,7 @@ namespace login
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(10, 0, 1, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1150, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(1150, 25);
             this.toolStrip1.TabIndex = 30;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -149,7 +149,7 @@ namespace login
             this.toolStripSplitButton1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.toolStripSplitButton1.ForeColor = System.Drawing.Color.White;
             this.toolStripSplitButton1.Name = "toolStripSplitButton1";
-            this.toolStripSplitButton1.Size = new System.Drawing.Size(43, 24);
+            this.toolStripSplitButton1.Size = new System.Drawing.Size(42, 22);
             this.toolStripSplitButton1.Text = "File";
             this.toolStripSplitButton1.ButtonClick += new System.EventHandler(this.toolStripSplitButton1_ButtonClick);
             // 
@@ -158,7 +158,7 @@ namespace login
             this.exitToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.exitToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -174,7 +174,7 @@ namespace login
             this.master_strip.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.master_strip.ForeColor = System.Drawing.Color.White;
             this.master_strip.Name = "master_strip";
-            this.master_strip.Size = new System.Drawing.Size(61, 24);
+            this.master_strip.Size = new System.Drawing.Size(62, 22);
             this.master_strip.Text = "Master";
             // 
             // userMasterToolStripMenuItem
@@ -182,7 +182,7 @@ namespace login
             this.userMasterToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.userMasterToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.userMasterToolStripMenuItem.Name = "userMasterToolStripMenuItem";
-            this.userMasterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.userMasterToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.userMasterToolStripMenuItem.Text = "User Master";
             this.userMasterToolStripMenuItem.Click += new System.EventHandler(this.userMasterToolStripMenuItem_Click);
             // 
@@ -194,7 +194,7 @@ namespace login
             this.changeStatusToolStripMenuItem});
             this.mechineMasterToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.mechineMasterToolStripMenuItem.Name = "mechineMasterToolStripMenuItem";
-            this.mechineMasterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.mechineMasterToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.mechineMasterToolStripMenuItem.Text = "Machine Master";
             // 
             // addDeviceToolStripMenuItem
@@ -202,7 +202,7 @@ namespace login
             this.addDeviceToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.addDeviceToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.addDeviceToolStripMenuItem.Name = "addDeviceToolStripMenuItem";
-            this.addDeviceToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.addDeviceToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.addDeviceToolStripMenuItem.Text = "Add Device";
             this.addDeviceToolStripMenuItem.Click += new System.EventHandler(this.addDeviceToolStripMenuItem_Click);
             // 
@@ -211,7 +211,7 @@ namespace login
             this.changeStatusToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.changeStatusToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.changeStatusToolStripMenuItem.Name = "changeStatusToolStripMenuItem";
-            this.changeStatusToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.changeStatusToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.changeStatusToolStripMenuItem.Text = "Change Status";
             // 
             // tareMasterToolStripMenuItem
@@ -219,7 +219,7 @@ namespace login
             this.tareMasterToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.tareMasterToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.tareMasterToolStripMenuItem.Name = "tareMasterToolStripMenuItem";
-            this.tareMasterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.tareMasterToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.tareMasterToolStripMenuItem.Text = "Vehicle Master";
             this.tareMasterToolStripMenuItem.Click += new System.EventHandler(this.tareMasterToolStripMenuItem_Click);
             // 
@@ -228,7 +228,7 @@ namespace login
             this.chargesMasterToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.chargesMasterToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.chargesMasterToolStripMenuItem.Name = "chargesMasterToolStripMenuItem";
-            this.chargesMasterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.chargesMasterToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.chargesMasterToolStripMenuItem.Text = "Charges Master";
             this.chargesMasterToolStripMenuItem.Click += new System.EventHandler(this.chargesMasterToolStripMenuItem_Click);
             // 
@@ -237,7 +237,7 @@ namespace login
             this.dataChangeToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this.dataChangeToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.dataChangeToolStripMenuItem.Name = "dataChangeToolStripMenuItem";
-            this.dataChangeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.dataChangeToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.dataChangeToolStripMenuItem.Text = "Data Change";
             this.dataChangeToolStripMenuItem.Click += new System.EventHandler(this.dataChangeToolStripMenuItem_Click);
             // 
@@ -250,7 +250,7 @@ namespace login
             this.toolStripSplitButton3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.toolStripSplitButton3.ForeColor = System.Drawing.Color.White;
             this.toolStripSplitButton3.Name = "toolStripSplitButton3";
-            this.toolStripSplitButton3.Size = new System.Drawing.Size(66, 24);
+            this.toolStripSplitButton3.Size = new System.Drawing.Size(67, 22);
             this.toolStripSplitButton3.Text = "Reports";
             // 
             // pendingSlipsToolStripMenuItem
@@ -279,7 +279,7 @@ namespace login
             this.headerPanel.Controls.Add(this.lblLiveClock);
             this.headerPanel.Controls.Add(this.lblOperatorInfo);
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 27);
+            this.headerPanel.Location = new System.Drawing.Point(0, 25);
             this.headerPanel.Name = "headerPanel";
             this.headerPanel.Padding = new System.Windows.Forms.Padding(15, 8, 15, 8);
             this.headerPanel.Size = new System.Drawing.Size(1150, 62);
@@ -303,7 +303,7 @@ namespace login
             this.lblHeaderSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.lblHeaderSubtitle.Location = new System.Drawing.Point(18, 36);
             this.lblHeaderSubtitle.Name = "lblHeaderSubtitle";
-            this.lblHeaderSubtitle.Size = new System.Drawing.Size(431, 15);
+            this.lblHeaderSubtitle.Size = new System.Drawing.Size(387, 15);
             this.lblHeaderSubtitle.TabIndex = 1;
             this.lblHeaderSubtitle.Text = "Aarogya Dairy Products Private Limited  |  Electronic Pitless Weighbridge";
             // 
@@ -315,7 +315,7 @@ namespace login
             this.lblLiveClock.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
             this.lblLiveClock.Location = new System.Drawing.Point(900, 10);
             this.lblLiveClock.Name = "lblLiveClock";
-            this.lblLiveClock.Size = new System.Drawing.Size(160, 20);
+            this.lblLiveClock.Size = new System.Drawing.Size(164, 20);
             this.lblLiveClock.TabIndex = 2;
             this.lblLiveClock.Text = "05-Oct-2026 18:20:00";
             // 
@@ -327,7 +327,7 @@ namespace login
             this.lblOperatorInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this.lblOperatorInfo.Location = new System.Drawing.Point(900, 36);
             this.lblOperatorInfo.Name = "lblOperatorInfo";
-            this.lblOperatorInfo.Size = new System.Drawing.Size(193, 15);
+            this.lblOperatorInfo.Size = new System.Drawing.Size(190, 15);
             this.lblOperatorInfo.TabIndex = 3;
             this.lblOperatorInfo.Text = "👤 Operator: Admin | Shift: General";
             // 
@@ -350,9 +350,10 @@ namespace login
             this.lblShortcuts.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this.lblShortcuts.Location = new System.Drawing.Point(20, 25);
             this.lblShortcuts.Name = "lblShortcuts";
-            this.lblShortcuts.Size = new System.Drawing.Size(496, 15);
+            this.lblShortcuts.Size = new System.Drawing.Size(567, 15);
             this.lblShortcuts.TabIndex = 0;
-            this.lblShortcuts.Text = "Shortcuts: [F1] Capture Weight  |  [F2] Save Slip  |  [F3] Print  |  [F4] Tare Mode  |  [F5] Gross Mode  |  [Esc] Exit";
+            this.lblShortcuts.Text = "Shortcuts: [F1] Capture Weight  |  [F2] Save Slip  |  [F3] Print  |  [F4] Tare Mo" +
+    "de  |  [F5] Gross Mode  |  [Esc] Exit";
             // 
             // actionButtonsPanel
             // 
@@ -363,7 +364,6 @@ namespace login
             this.actionButtonsPanel.Controls.Add(this.print_btn);
             this.actionButtonsPanel.Controls.Add(this.button2);
             this.actionButtonsPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.actionButtonsPanel.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
             this.actionButtonsPanel.Location = new System.Drawing.Point(680, 10);
             this.actionButtonsPanel.Name = "actionButtonsPanel";
             this.actionButtonsPanel.Padding = new System.Windows.Forms.Padding(0, 0, 20, 0);
@@ -429,141 +429,11 @@ namespace login
             this.mainContainer.Controls.Add(this.twoColumnCards);
             this.mainContainer.Controls.Add(this.heroScaleCard);
             this.mainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainContainer.Location = new System.Drawing.Point(0, 89);
+            this.mainContainer.Location = new System.Drawing.Point(0, 87);
             this.mainContainer.Name = "mainContainer";
             this.mainContainer.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
-            this.mainContainer.Size = new System.Drawing.Size(1150, 595);
+            this.mainContainer.Size = new System.Drawing.Size(1150, 597);
             this.mainContainer.TabIndex = 49;
-            // 
-            // heroScaleCard
-            // 
-            this.heroScaleCard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this.heroScaleCard.Controls.Add(this.capturePanel);
-            this.heroScaleCard.Controls.Add(this.digitalBezel);
-            this.heroScaleCard.Dock = System.Windows.Forms.DockStyle.Top;
-            this.heroScaleCard.Location = new System.Drawing.Point(20, 15);
-            this.heroScaleCard.Margin = new System.Windows.Forms.Padding(0, 0, 0, 15);
-            this.heroScaleCard.Name = "heroScaleCard";
-            this.heroScaleCard.Padding = new System.Windows.Forms.Padding(15, 12, 15, 12);
-            this.heroScaleCard.Size = new System.Drawing.Size(1110, 120);
-            this.heroScaleCard.TabIndex = 0;
-            // 
-            // digitalBezel
-            // 
-            this.digitalBezel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(6)))), ((int)(((byte)(23)))));
-            this.digitalBezel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.digitalBezel.Controls.Add(this.lblScaleStatus);
-            this.digitalBezel.Controls.Add(this.lblUnitKg);
-            this.digitalBezel.Controls.Add(this.cuttent_weight_box);
-            this.digitalBezel.Location = new System.Drawing.Point(15, 12);
-            this.digitalBezel.Name = "digitalBezel";
-            this.digitalBezel.Size = new System.Drawing.Size(350, 96);
-            this.digitalBezel.TabIndex = 0;
-            // 
-            // lblScaleStatus
-            // 
-            this.lblScaleStatus.AutoSize = true;
-            this.lblScaleStatus.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.lblScaleStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(185)))), ((int)(((byte)(129)))));
-            this.lblScaleStatus.Location = new System.Drawing.Point(12, 6);
-            this.lblScaleStatus.Name = "lblScaleStatus";
-            this.lblScaleStatus.Size = new System.Drawing.Size(138, 13);
-            this.lblScaleStatus.TabIndex = 0;
-            this.lblScaleStatus.Text = "● SCALE LIVE INDICATOR";
-            // 
-            // lblUnitKg
-            // 
-            this.lblUnitKg.AutoSize = true;
-            this.lblUnitKg.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblUnitKg.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this.lblUnitKg.Location = new System.Drawing.Point(295, 36);
-            this.lblUnitKg.Name = "lblUnitKg";
-            this.lblUnitKg.Size = new System.Drawing.Size(38, 25);
-            this.lblUnitKg.TabIndex = 1;
-            this.lblUnitKg.Text = "KG";
-            // 
-            // cuttent_weight_box
-            // 
-            this.cuttent_weight_box.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(6)))), ((int)(((byte)(23)))));
-            this.cuttent_weight_box.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.cuttent_weight_box.Font = new System.Drawing.Font("Consolas", 36F, System.Drawing.FontStyle.Bold);
-            this.cuttent_weight_box.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(157)))));
-            this.cuttent_weight_box.Location = new System.Drawing.Point(8, 26);
-            this.cuttent_weight_box.Name = "cuttent_weight_box";
-            this.cuttent_weight_box.ReadOnly = true;
-            this.cuttent_weight_box.Size = new System.Drawing.Size(280, 60);
-            this.cuttent_weight_box.TabIndex = 35;
-            this.cuttent_weight_box.Text = "0";
-            this.cuttent_weight_box.TextChanged += new System.EventHandler(this.cuttent_weight_box_TextChanged);
-            // 
-            // capturePanel
-            // 
-            this.capturePanel.BackColor = System.Drawing.Color.Transparent;
-            this.capturePanel.Controls.Add(this.lblModeHeader);
-            this.capturePanel.Controls.Add(this.radioButton1);
-            this.capturePanel.Controls.Add(this.radioButton2);
-            this.capturePanel.Controls.Add(this.button1);
-            this.capturePanel.Location = new System.Drawing.Point(385, 12);
-            this.capturePanel.Name = "capturePanel";
-            this.capturePanel.Size = new System.Drawing.Size(550, 96);
-            this.capturePanel.TabIndex = 1;
-            // 
-            // lblModeHeader
-            // 
-            this.lblModeHeader.AutoSize = true;
-            this.lblModeHeader.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-            this.lblModeHeader.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this.lblModeHeader.Location = new System.Drawing.Point(5, 5);
-            this.lblModeHeader.Name = "lblModeHeader";
-            this.lblModeHeader.Size = new System.Drawing.Size(147, 15);
-            this.lblModeHeader.TabIndex = 0;
-            this.lblModeHeader.Text = "ACTIVE WEIGHING MODE";
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.BackColor = System.Drawing.Color.Transparent;
-            this.radioButton1.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
-            this.radioButton1.ForeColor = System.Drawing.Color.White;
-            this.radioButton1.Location = new System.Drawing.Point(5, 28);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(138, 23);
-            this.radioButton1.TabIndex = 32;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Tare Weight (F4)";
-            this.radioButton1.UseVisualStyleBackColor = false;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.BackColor = System.Drawing.Color.Transparent;
-            this.radioButton2.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
-            this.radioButton2.ForeColor = System.Drawing.Color.White;
-            this.radioButton2.Location = new System.Drawing.Point(175, 28);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(147, 23);
-            this.radioButton2.TabIndex = 33;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Gross Weight (F5)";
-            this.radioButton2.UseVisualStyleBackColor = false;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(185)))), ((int)(((byte)(129)))));
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(5, 55);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(270, 36);
-            this.button1.TabIndex = 26;
-            this.button1.Text = "⚡  CAPTURE WEIGHT (F1)";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // twoColumnCards
             // 
@@ -579,7 +449,7 @@ namespace login
             this.twoColumnCards.Name = "twoColumnCards";
             this.twoColumnCards.RowCount = 1;
             this.twoColumnCards.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.twoColumnCards.Size = new System.Drawing.Size(1110, 445);
+            this.twoColumnCards.Size = new System.Drawing.Size(1110, 447);
             this.twoColumnCards.TabIndex = 1;
             // 
             // cardLeft
@@ -592,30 +462,8 @@ namespace login
             this.cardLeft.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.cardLeft.Name = "cardLeft";
             this.cardLeft.Padding = new System.Windows.Forms.Padding(16, 12, 16, 16);
-            this.cardLeft.Size = new System.Drawing.Size(545, 445);
+            this.cardLeft.Size = new System.Drawing.Size(545, 447);
             this.cardLeft.TabIndex = 0;
-            // 
-            // pnlLeftHeader
-            // 
-            this.pnlLeftHeader.BackColor = System.Drawing.Color.White;
-            this.pnlLeftHeader.Controls.Add(this.lblCardLeftTitle);
-            this.pnlLeftHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlLeftHeader.Location = new System.Drawing.Point(16, 12);
-            this.pnlLeftHeader.Name = "pnlLeftHeader";
-            this.pnlLeftHeader.Size = new System.Drawing.Size(513, 36);
-            this.pnlLeftHeader.TabIndex = 0;
-            // 
-            // lblCardLeftTitle
-            // 
-            this.lblCardLeftTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCardLeftTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblCardLeftTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(58)))), ((int)(((byte)(138)))));
-            this.lblCardLeftTitle.Location = new System.Drawing.Point(0, 0);
-            this.lblCardLeftTitle.Name = "lblCardLeftTitle";
-            this.lblCardLeftTitle.Size = new System.Drawing.Size(513, 36);
-            this.lblCardLeftTitle.TabIndex = 0;
-            this.lblCardLeftTitle.Text = "🚛  VEHICLE & WEIGHMENT DETAILS";
-            this.lblCardLeftTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tableLayoutPanel1
             // 
@@ -648,7 +496,7 @@ namespace login
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 85F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(513, 381);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(513, 383);
             this.tableLayoutPanel1.TabIndex = 45;
             // 
             // label1
@@ -829,7 +677,7 @@ namespace login
             this.label7.Location = new System.Drawing.Point(4, 243);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(142, 135);
+            this.label7.Size = new System.Drawing.Size(142, 137);
             this.label7.TabIndex = 12;
             this.label7.Text = "Remarks / Notes";
             // 
@@ -839,12 +687,34 @@ namespace login
             this.remarks_box.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.remarks_box.Dock = System.Windows.Forms.DockStyle.Fill;
             this.remarks_box.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.remarks_box.Location = new System.Drawing.Point(154, 247);
+            this.remarks_box.Location = new System.Drawing.Point(154, 244);
             this.remarks_box.Margin = new System.Windows.Forms.Padding(4, 4, 8, 4);
             this.remarks_box.Name = "remarks_box";
-            this.remarks_box.Size = new System.Drawing.Size(351, 130);
+            this.remarks_box.Size = new System.Drawing.Size(351, 135);
             this.remarks_box.TabIndex = 15;
             this.remarks_box.Text = "";
+            // 
+            // pnlLeftHeader
+            // 
+            this.pnlLeftHeader.BackColor = System.Drawing.Color.White;
+            this.pnlLeftHeader.Controls.Add(this.lblCardLeftTitle);
+            this.pnlLeftHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlLeftHeader.Location = new System.Drawing.Point(16, 12);
+            this.pnlLeftHeader.Name = "pnlLeftHeader";
+            this.pnlLeftHeader.Size = new System.Drawing.Size(513, 36);
+            this.pnlLeftHeader.TabIndex = 0;
+            // 
+            // lblCardLeftTitle
+            // 
+            this.lblCardLeftTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCardLeftTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblCardLeftTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(58)))), ((int)(((byte)(138)))));
+            this.lblCardLeftTitle.Location = new System.Drawing.Point(0, 0);
+            this.lblCardLeftTitle.Name = "lblCardLeftTitle";
+            this.lblCardLeftTitle.Size = new System.Drawing.Size(513, 36);
+            this.lblCardLeftTitle.TabIndex = 0;
+            this.lblCardLeftTitle.Text = "🚛  VEHICLE & WEIGHMENT DETAILS";
+            this.lblCardLeftTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // cardRight
             // 
@@ -856,30 +726,8 @@ namespace login
             this.cardRight.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.cardRight.Name = "cardRight";
             this.cardRight.Padding = new System.Windows.Forms.Padding(16, 12, 16, 16);
-            this.cardRight.Size = new System.Drawing.Size(545, 445);
+            this.cardRight.Size = new System.Drawing.Size(545, 447);
             this.cardRight.TabIndex = 1;
-            // 
-            // pnlRightHeader
-            // 
-            this.pnlRightHeader.BackColor = System.Drawing.Color.White;
-            this.pnlRightHeader.Controls.Add(this.lblCardRightTitle);
-            this.pnlRightHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlRightHeader.Location = new System.Drawing.Point(16, 12);
-            this.pnlRightHeader.Name = "pnlRightHeader";
-            this.pnlRightHeader.Size = new System.Drawing.Size(513, 36);
-            this.pnlRightHeader.TabIndex = 0;
-            // 
-            // lblCardRightTitle
-            // 
-            this.lblCardRightTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCardRightTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblCardRightTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(70)))), ((int)(((byte)(229)))));
-            this.lblCardRightTitle.Location = new System.Drawing.Point(0, 0);
-            this.lblCardRightTitle.Name = "lblCardRightTitle";
-            this.lblCardRightTitle.Size = new System.Drawing.Size(513, 36);
-            this.lblCardRightTitle.TabIndex = 0;
-            this.lblCardRightTitle.Text = "📋  SLIP & CHARGES DETAILS";
-            this.lblCardRightTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tableLayoutPanel2
             // 
@@ -910,7 +758,7 @@ namespace login
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 85F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(513, 381);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(513, 383);
             this.tableLayoutPanel2.TabIndex = 46;
             // 
             // label10
@@ -1075,6 +923,158 @@ namespace login
             this.charges_drop.TabIndex = 25;
             this.charges_drop.SelectedIndexChanged += new System.EventHandler(this.charges_drop_SelectedIndexChanged);
             // 
+            // pnlRightHeader
+            // 
+            this.pnlRightHeader.BackColor = System.Drawing.Color.White;
+            this.pnlRightHeader.Controls.Add(this.lblCardRightTitle);
+            this.pnlRightHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlRightHeader.Location = new System.Drawing.Point(16, 12);
+            this.pnlRightHeader.Name = "pnlRightHeader";
+            this.pnlRightHeader.Size = new System.Drawing.Size(513, 36);
+            this.pnlRightHeader.TabIndex = 0;
+            // 
+            // lblCardRightTitle
+            // 
+            this.lblCardRightTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCardRightTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblCardRightTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(70)))), ((int)(((byte)(229)))));
+            this.lblCardRightTitle.Location = new System.Drawing.Point(0, 0);
+            this.lblCardRightTitle.Name = "lblCardRightTitle";
+            this.lblCardRightTitle.Size = new System.Drawing.Size(513, 36);
+            this.lblCardRightTitle.TabIndex = 0;
+            this.lblCardRightTitle.Text = "📋  SLIP & CHARGES DETAILS";
+            this.lblCardRightTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // heroScaleCard
+            // 
+            this.heroScaleCard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.heroScaleCard.Controls.Add(this.capturePanel);
+            this.heroScaleCard.Controls.Add(this.digitalBezel);
+            this.heroScaleCard.Dock = System.Windows.Forms.DockStyle.Top;
+            this.heroScaleCard.Location = new System.Drawing.Point(20, 15);
+            this.heroScaleCard.Margin = new System.Windows.Forms.Padding(0, 0, 0, 15);
+            this.heroScaleCard.Name = "heroScaleCard";
+            this.heroScaleCard.Padding = new System.Windows.Forms.Padding(15, 12, 15, 12);
+            this.heroScaleCard.Size = new System.Drawing.Size(1110, 120);
+            this.heroScaleCard.TabIndex = 0;
+            // 
+            // capturePanel
+            // 
+            this.capturePanel.BackColor = System.Drawing.Color.Transparent;
+            this.capturePanel.Controls.Add(this.lblModeHeader);
+            this.capturePanel.Controls.Add(this.radioButton1);
+            this.capturePanel.Controls.Add(this.radioButton2);
+            this.capturePanel.Controls.Add(this.button1);
+            this.capturePanel.Location = new System.Drawing.Point(385, 12);
+            this.capturePanel.Name = "capturePanel";
+            this.capturePanel.Size = new System.Drawing.Size(550, 96);
+            this.capturePanel.TabIndex = 1;
+            // 
+            // lblModeHeader
+            // 
+            this.lblModeHeader.AutoSize = true;
+            this.lblModeHeader.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+            this.lblModeHeader.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.lblModeHeader.Location = new System.Drawing.Point(5, 5);
+            this.lblModeHeader.Name = "lblModeHeader";
+            this.lblModeHeader.Size = new System.Drawing.Size(150, 15);
+            this.lblModeHeader.TabIndex = 0;
+            this.lblModeHeader.Text = "ACTIVE WEIGHING MODE";
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.BackColor = System.Drawing.Color.Transparent;
+            this.radioButton1.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.radioButton1.ForeColor = System.Drawing.Color.White;
+            this.radioButton1.Location = new System.Drawing.Point(5, 28);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(137, 23);
+            this.radioButton1.TabIndex = 32;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Tare Weight (F4)";
+            this.radioButton1.UseVisualStyleBackColor = false;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.BackColor = System.Drawing.Color.Transparent;
+            this.radioButton2.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.radioButton2.ForeColor = System.Drawing.Color.White;
+            this.radioButton2.Location = new System.Drawing.Point(175, 28);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(145, 23);
+            this.radioButton2.TabIndex = 33;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "Gross Weight (F5)";
+            this.radioButton2.UseVisualStyleBackColor = false;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(185)))), ((int)(((byte)(129)))));
+            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(5, 55);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(270, 36);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "⚡  CAPTURE WEIGHT (F1)";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // digitalBezel
+            // 
+            this.digitalBezel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(6)))), ((int)(((byte)(23)))));
+            this.digitalBezel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.digitalBezel.Controls.Add(this.lblScaleStatus);
+            this.digitalBezel.Controls.Add(this.lblUnitKg);
+            this.digitalBezel.Controls.Add(this.cuttent_weight_box);
+            this.digitalBezel.Location = new System.Drawing.Point(15, 12);
+            this.digitalBezel.Name = "digitalBezel";
+            this.digitalBezel.Size = new System.Drawing.Size(350, 96);
+            this.digitalBezel.TabIndex = 0;
+            // 
+            // lblScaleStatus
+            // 
+            this.lblScaleStatus.AutoSize = true;
+            this.lblScaleStatus.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblScaleStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(185)))), ((int)(((byte)(129)))));
+            this.lblScaleStatus.Location = new System.Drawing.Point(12, 6);
+            this.lblScaleStatus.Name = "lblScaleStatus";
+            this.lblScaleStatus.Size = new System.Drawing.Size(136, 13);
+            this.lblScaleStatus.TabIndex = 0;
+            this.lblScaleStatus.Text = "● SCALE LIVE INDICATOR";
+            // 
+            // lblUnitKg
+            // 
+            this.lblUnitKg.AutoSize = true;
+            this.lblUnitKg.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblUnitKg.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.lblUnitKg.Location = new System.Drawing.Point(295, 36);
+            this.lblUnitKg.Name = "lblUnitKg";
+            this.lblUnitKg.Size = new System.Drawing.Size(37, 25);
+            this.lblUnitKg.TabIndex = 1;
+            this.lblUnitKg.Text = "KG";
+            // 
+            // cuttent_weight_box
+            // 
+            this.cuttent_weight_box.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(6)))), ((int)(((byte)(23)))));
+            this.cuttent_weight_box.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.cuttent_weight_box.Font = new System.Drawing.Font("Consolas", 36F, System.Drawing.FontStyle.Bold);
+            this.cuttent_weight_box.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(157)))));
+            this.cuttent_weight_box.Location = new System.Drawing.Point(8, 26);
+            this.cuttent_weight_box.Name = "cuttent_weight_box";
+            this.cuttent_weight_box.ReadOnly = true;
+            this.cuttent_weight_box.Size = new System.Drawing.Size(280, 60);
+            this.cuttent_weight_box.TabIndex = 35;
+            this.cuttent_weight_box.Text = "0";
+            this.cuttent_weight_box.TextChanged += new System.EventHandler(this.cuttent_weight_box_TextChanged);
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.BackColor = System.Drawing.SystemColors.Window;
@@ -1137,7 +1137,6 @@ namespace login
             this.Controls.Add(this.ref_slipNo_box);
             this.Controls.Add(this.ref_dateSlip_no);
             this.DoubleBuffered = true;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -1154,20 +1153,20 @@ namespace login
             this.bottomBar.PerformLayout();
             this.actionButtonsPanel.ResumeLayout(false);
             this.mainContainer.ResumeLayout(false);
-            this.heroScaleCard.ResumeLayout(false);
-            this.digitalBezel.ResumeLayout(false);
-            this.digitalBezel.PerformLayout();
-            this.capturePanel.ResumeLayout(false);
-            this.capturePanel.PerformLayout();
             this.twoColumnCards.ResumeLayout(false);
             this.cardLeft.ResumeLayout(false);
-            this.pnlLeftHeader.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.pnlLeftHeader.ResumeLayout(false);
             this.cardRight.ResumeLayout(false);
-            this.pnlRightHeader.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            this.pnlRightHeader.ResumeLayout(false);
+            this.heroScaleCard.ResumeLayout(false);
+            this.capturePanel.ResumeLayout(false);
+            this.capturePanel.PerformLayout();
+            this.digitalBezel.ResumeLayout(false);
+            this.digitalBezel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

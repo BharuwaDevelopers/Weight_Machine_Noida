@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,11 +74,6 @@ namespace login.Serial
             // Send data to whom ever interested
             if (NewSerialDataRecieved != null)
                 NewSerialDataRecieved(this, new SerialDataEventArgs(data));
-
-            //Thread.Sleep(200);
-            //string str = _serialPort.ReadExisting();
-            //if (NewSerialDataRecieved != null)
-            //    NewSerialDataRecieved(this, new SerialDataEventArgs(str));
         }
 
         #endregion

@@ -1,24 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using  login;
-using System.IO;
 using System.Data.SqlClient;
+using System.IO.Ports;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace login.Serial
 {
     public partial class LISTNER : Form
-       {
+    {
         public static string a;
-        public static String ld_data = "0";
+        public static string ld_data = "0";
         public static string active_mech;
-        SerialPortManager _spManager;   
+        private SerialPortManager _spManager;
+
         public LISTNER()
         {
             InitializeComponent();
@@ -36,7 +32,7 @@ namespace login.Serial
                 using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
                 {
                     db_connect.Open();
-                    using (SqlDataAdapter sda = new SqlDataAdapter("Select * from machine_master where m_status = 'Active' ", db_connect))
+                    using (SqlDataAdapter sda = new SqlDataAdapter("SELECT * FROM machine_master WHERE m_status = 'Active'", db_connect))
                     {
                         DataTable dt = new DataTable();
                         sda.Fill(dt);
@@ -63,19 +59,15 @@ namespace login.Serial
                                 mySerialSettings.DataBits = dVal;
                                 dataBitsComboBox.Text = data;
                             }
-                            if (!string.IsNullOrEmpty(parity))
+                            if (!string.IsNullOrEmpty(parity) && Enum.TryParse(parity, true, out Parity pVal))
                             {
                                 parityComboBox.Text = parity;
-                                System.IO.Ports.Parity pVal;
-                                if (Enum.TryParse(parity, true, out pVal))
-                                    mySerialSettings.Parity = pVal;
+                                mySerialSettings.Parity = pVal;
                             }
-                            if (!string.IsNullOrEmpty(stop))
+                            if (!string.IsNullOrEmpty(stop) && Enum.TryParse(stop, true, out StopBits sVal))
                             {
                                 stopBitsComboBox.Text = stop;
-                                System.IO.Ports.StopBits sVal;
-                                if (Enum.TryParse(stop, true, out sVal))
-                                    mySerialSettings.StopBits = sVal;
+                                mySerialSettings.StopBits = sVal;
                             }
                         }
                     }
@@ -86,212 +78,104 @@ namespace login.Serial
                 Console.WriteLine("UserInitialization serial error: " + ex.Message);
             }
 
-            _spManager.NewSerialDataRecieved += new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved);
-            this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
+            _spManager.NewSerialDataRecieved += _spManager_NewSerialDataRecieved;
+            this.FormClosing += MainForm_FormClosing;
         }
-
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _spManager.Dispose();
-        }
-        private static Random random = new Random();
-        public static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
+            _spManager?.Dispose();
         }
 
-        //void _spManager_NewSerialDataRecieved(object sender, SerialDataEventArgs e)
-        //{
-        //    if (this.InvokeRequired)
-        //    {
-        //        // Using this.Invoke causes deadlock when closing serial port, and BeginInvoke is good practice anyway.
-        //        this.BeginInvoke(new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved), new object[] { sender, e });
-        //        return;
-        //    }
-        //    //Console.WriteLine("value of is *&^" + e.Data);
-        //    int maxTextLength = 1000; // maximum text length in text box
-        //    //if (tbData1.TextLength > maxTextLength)
-        //    //    tbData1.Text = tbData1.Text.Remove(0, tbData1.TextLength - maxTextLength);
-
-
-        //    // This application is connected to a GPS sending ASCCI characters, so data is converted to text
-        //    string str = e.strData;
-        //    string newstr = " ";
-
-        //    textBox1.Text = str;
-        //    if (str.ToLower().Contains("k   "))
-        //    {
-        //        if (str.IndexOf("k", str.IndexOf("k   ") + 1) > 0)
-        //            newstr = str.Substring(str.IndexOf("k   ") + 4, str.IndexOf("k", str.IndexOf("k   ") + 1) - (str.IndexOf("k   ") + 4)).Trim();
-        //        else
-        //            newstr = str.Substring(str.IndexOf("k   ") + 4).Trim();
-        //    }
-        //    else
-        //    {
-        //        newstr = str.Trim();
-        //    }
-        //    Console.WriteLine("str" + e.strData);
-        //    Console.WriteLine("newstr" + newstr);
-
-        //    // textBox1.Text = newstr.ToString();
-        //    tbData1.Text = newstr;
-
-        //}
-
-        void _spManager_NewSerialDataRecieved(object sender, SerialDataEventArgs e)
+        private void _spManager_NewSerialDataRecieved(object sender, SerialDataEventArgs e)
         {
-            try { 
-            if (this.InvokeRequired)
+            try
             {
-                // Using this.Invoke causes deadlock when closing serial port, and BeginInvoke is good practice anyway.
-                this.BeginInvoke(new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved), new object[] { sender, e });
-                return;
-            }
-            Console.WriteLine("value of is *&^" + e.Data);
-            int maxTextLength = 1000; // maximum text length in text box
-            if (tbData1.TextLength > maxTextLength)
-                tbData1.Text = tbData1.Text.Remove(0, tbData1.TextLength - maxTextLength);
+                if (this.InvokeRequired)
+                {
+                    this.BeginInvoke(new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved), sender, e);
+                    return;
+                }
 
+                if (e.Data == null || e.Data.Length == 0)
+                    return;
 
-            // This application is connected to a GPS sending ASCCI characters, so data is converted to text
-            string str = Encoding.ASCII.GetString(e.Data);
-            string newstr;
+                const int maxTextLength = 1000;
+                if (tbData1.TextLength > maxTextLength)
+                {
+                    tbData1.Text = tbData1.Text.Remove(0, tbData1.TextLength - maxTextLength);
+                }
 
-            textBox1.Text = str;
-                //paste hare 
+                // Mask 8th bit (parity bit) so 7-bit ASCII with parity does not convert to '?'
+                byte[] cleanBytes = new byte[e.Data.Length];
+                for (int i = 0; i < e.Data.Length; i++)
+                {
+                    cleanBytes[i] = (byte)(e.Data[i] & 0x7F);
+                }
+
+                string str = Encoding.ASCII.GetString(cleanBytes);
+                string newstr;
+
+                textBox1.Text = str;
 
                 if (str.ToLower().Contains(" "))
                 {
-                    Console.WriteLine("value of first" + str.Substring(str.IndexOf(" ") + 1).Length);
-                    if (str.Substring(str.IndexOf(" ") + 1).Length > 6)
-                    {
-                        newstr = str.Substring(str.IndexOf(" ") + 1, 6).Trim();
-                        //Console.WriteLine("value of str" + str.IndexOf(" "));
-                    }
-                    else
-                    {
-                        newstr = str.Substring(str.IndexOf("") + 1).Trim();
-                        // Console.WriteLine("value%%"+ str.IndexOf(""));
-                    }
+                    int spaceIndex = str.IndexOf(" ");
+                    string afterSpace = str.Substring(spaceIndex + 1);
+                    newstr = afterSpace.Length > 6 ? afterSpace.Substring(0, 6).Trim() : afterSpace.Trim();
                 }
                 else
                 {
                     newstr = str.Trim();
                 }
-                //Console.WriteLine("value of str" +newstr
 
-                //if (str.ToLower().Contains("0"))
-                //{
-                //    Console.WriteLine("value of first" + str.Substring(str.IndexOf(" ") + 1).Length);
-                //    if (str.Substring(str.IndexOf(" ") + 1).Length > 6)
-                //    {
-                //        newstr = str.Substring(str.IndexOf(" ") + 1, 6).Trim();
-                //    }
-                //    else
-                //    {
-                //        newstr = str.Substring(str.IndexOf("") + 1).Trim();
-                //    }
-                //}
-                //else
-                //{
-                //    newstr = str.Trim();
-                //}
-
-
-
-                //if (str.ToLower().Contains("k"))
-                //{
-                //    if (str.Substring(str.IndexOf("k") + 1).Length > 7)
-                //    {
-                //        newstr = str.Substring(str.IndexOf("k") + 1, 7).Trim();
-                //    }
-                //    else
-                //    {
-                //        newstr = str.Substring(str.IndexOf("k") + 1).Trim();
-                //    }
-                //}
-                //else
-                //{
-                //    newstr = str.Trim();
-                //}
-
-                Console.WriteLine("str" + e.strData);
-            Console.WriteLine("newstr" + newstr);
-
-
-            // textBox1.Text = newstr.ToString();
-            ld_data = newstr;
-
-            tbData1.Text = newstr;
-            // main main = new main();
-            // main.crr_weight(newstr);
-            //tbData1.Text = RandomString(5);
-            //String newstr1 = " ";
-            //if (tbData1.Text.ToLower().Contains("k   "))
-            //{
-            //    if (tbData1.Text.IndexOf("k", str.IndexOf("k   ") + 1) > 0)
-            //        newstr = tbData1.Text.Substring(str.IndexOf("k   ") + 4, tbData1.Text.IndexOf("k", tbData1.Text.IndexOf("k   ") + 1) - (tbData1.Text.IndexOf("k   ") + 4)).Trim();
-            //    else
-            //        newstr1 = tbData1.Text.Substring(tbData1.Text.IndexOf("k   ") + 4).Trim();
-            //}
-            //else
-            //{
-            //    newstr1 = str;
-            //}
-            //// tbData1.Text = str;
-
-            ////tbData1.ScrollToCaret();
-            //textBox1.Text = newstr1; 
-        }
+                // Extract numeric digits to prevent displaying question marks or garbage characters
+                string numericOnly = Regex.Match(newstr, @"\d+(\.\d+)?").Value;
+                ld_data = !string.IsNullOrEmpty(numericOnly) ? numericOnly : newstr;
+                tbData1.Text = ld_data;
+            }
             catch (Exception EX)
             {
-                MessageBox.Show("exception"+EX);
+                MessageBox.Show("exception: " + EX.Message);
             }
         }
 
-        // Handles the "Start Listening"-buttom click event
         private void btnStart_Click(object sender, EventArgs e)
         {
-           
-            Console.WriteLine("value of aaaa###" + a);
-           
-
-
         }
 
-        // Handles the "Stop Listening"-buttom click event
         private void btnStop_Click(object sender, EventArgs e)
         {
-            _spManager.StopListening();
+            _spManager?.StopListening();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {
-
         }
 
         public void LISTNER_Load(object sender, EventArgs e)
         {
             try
             {
-                string m_status = "Active";
+                const string m_status = "Active";
                 using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
                 {
                     db_connect.Open();
-                    using (SqlDataAdapter sda = new SqlDataAdapter("Select * from machine_master where m_status='" + m_status + "' ", db_connect))
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM machine_master WHERE m_status = @status", db_connect))
                     {
-                        DataTable dt = new DataTable();
-                        sda.Fill(dt);
-                        if (dt.Rows.Count > 0)
+                        cmd.Parameters.AddWithValue("@status", m_status);
+                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
                         {
-                            active_mech = dt.Rows[0][0]?.ToString();
-                            string port = dt.Rows[0][1]?.ToString().Trim();
-                            if (!string.IsNullOrEmpty(port) && _spManager != null && _spManager.CurrentSerialSettings != null)
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
+                            if (dt.Rows.Count > 0)
                             {
-                                _spManager.CurrentSerialSettings.PortName = port;
+                                active_mech = dt.Rows[0][0]?.ToString();
+                                string port = dt.Rows[0][1]?.ToString().Trim();
+                                if (!string.IsNullOrEmpty(port) && _spManager?.CurrentSerialSettings != null)
+                                {
+                                    _spManager.CurrentSerialSettings.PortName = port;
+                                }
                             }
                         }
                     }
@@ -304,8 +188,7 @@ namespace login.Serial
 
             try
             {
-                if (_spManager != null)
-                    _spManager.StartListening();
+                _spManager?.StartListening();
             }
             catch (Exception ex)
             {
@@ -313,20 +196,17 @@ namespace login.Serial
             }
         }
 
-      
         private void serialSettingsBindingSource_CurrentChanged(object sender, EventArgs e)
         {
-
         }
 
         private void tbData_KeyUp(object sender, KeyEventArgs e)
         {
-        
         }
 
         private void portNameComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_spManager != null && _spManager.CurrentSerialSettings != null && !string.IsNullOrWhiteSpace(portNameComboBox.Text))
+            if (_spManager?.CurrentSerialSettings != null && !string.IsNullOrWhiteSpace(portNameComboBox.Text))
             {
                 _spManager.CurrentSerialSettings.PortName = portNameComboBox.Text.Trim();
             }

@@ -1007,96 +1007,160 @@ namespace login
                 }
             }
 
-            // slpprintPreviewDialog1.ShowDialog();
-
             System.Drawing.Printing.PrintDocument printDocument = new PrintDocument();
-            // Set custom page size (Width x Height in inches)
-            PaperSize customPaperSize = new PaperSize("Custom Size", 750, 550); // Width = 850px, Height = 1100px
+            // Custom compact paper size for Dot Matrix printer paper saving (Width: 7.2" / 720, Height: 3.6" / 360)
+            PaperSize customPaperSize = new PaperSize("DotMatrix_PaperSave", 720, 360);
             printDocument.DefaultPageSettings.PaperSize = customPaperSize;
-            // You can also set other page properties, like margins, if needed
             printDocument.DefaultPageSettings.Margins = new Margins(10, 10, 10, 10);
+            
             // Attach the PrintPage event
             printDocument.PrintPage += slpprintDocument1_PrintPage;
+            
             // Create and configure the PrintPreviewDialog
             PrintPreviewDialog printPreviewDialog = new PrintPreviewDialog();
             printPreviewDialog.Document = printDocument;
-            // Set the size of the print preview dialog
-            printPreviewDialog.Width = 800;  // Set the width of the dialog (in pixels)
-            printPreviewDialog.Height = 700; // Set the height of the dialog (in pixels)
-            // Optionally, you can set the dialog's location on the screen
+            printPreviewDialog.Width = 850;
+            printPreviewDialog.Height = 550;
             printPreviewDialog.StartPosition = FormStartPosition.CenterScreen;
-            // Show the PrintPreviewDialog
             printPreviewDialog.ShowDialog();
 
         }
 
         private void slpprintDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
-            // e.Graphics.DrawString(label1.Text, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(250, 25));
-            //e.Graphics.DrawString(addressalble.Text, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(225, 50));
             string m_status = "Active";
-            SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-            db_connect.Open();
-            SqlDataAdapter sda = new SqlDataAdapter("Select plant_name,address from machine_master where m_status='" + m_status + "' ", db_connect);
-            DataTable dt = new DataTable();
-            sda.Fill(dt);
-            Console.WriteLine("value of plant name" + dt.Rows[0][0]);
-            Console.WriteLine("value of plant name" + dt.Rows[0][1]);
-            // string watermark = "Orignal Print";
-            // Image Image = Image.FromFile("D:/logo-main.png");
-            // System.Drawing.Graphics gpr = Graphics.FromImage(Image);
-            System.Drawing.Brush brush = new SolidBrush(System.Drawing.Color.Red);
-            Font font = new System.Drawing.Font("Arial", 55, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            string plantName = "WEIGHBRIDGE";
+            string plantAddress = "";
 
-            SizeF size = e.Graphics.MeasureString(watermark, font);
+            try
+            {
+                using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                {
+                    db_connect.Open();
+                    SqlDataAdapter sda = new SqlDataAdapter("Select plant_name,address from machine_master where m_status='" + m_status + "' ", db_connect);
+                    DataTable dt = new DataTable();
+                    sda.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        plantName = dt.Rows[0][0] != DBNull.Value ? dt.Rows[0][0].ToString() : "WEIGHBRIDGE";
+                        plantAddress = dt.Rows[0][1] != DBNull.Value ? dt.Rows[0][1].ToString() : "";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error reading machine master: " + ex.Message);
+            }
 
-            float y = 10;
-            float x = 50;
+            Graphics g = e.Graphics;
 
-            StringFormat format = new StringFormat();
-            format.Alignment = StringAlignment.Center;
+            // Background Watermark (Light Gray rotated watermark)
+            if (!string.IsNullOrEmpty(watermark))
+            {
+                Font wmFont = new Font("Arial", 36, FontStyle.Bold);
+                g.RotateTransform(-20);
+                g.DrawString(watermark.ToUpper(), wmFont, new SolidBrush(Color.FromArgb(230, 230, 230)), new PointF(10, 200));
+                g.ResetTransform();
+            }
 
-            SizeF txt = e.Graphics.MeasureString(Text, this.Font);
-            SizeF sz = e.Graphics.VisibleClipBounds.Size;
-            RectangleF printArea = new RectangleF(x, y, size.Width, size.Height);
-            e.Graphics.RotateTransform(45);
-            e.Graphics.DrawString(watermark, font, Brushes.LightGray, new RectangleF(0, 0, sz.Height, sz.Width), format);
+            // Pens & Fonts optimized for Dot Matrix clarity
+            Pen borderPen = new Pen(Color.Black, 1.5f);
+            Pen thinPen = new Pen(Color.Black, 1.0f);
+            Pen dashPen = new Pen(Color.Black, 1.0f) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash };
 
-            // e.Graphics.DrawString(watermark, font, Brushes.LightGray, printArea);
-            e.Graphics.ResetTransform();
-            //e.PageSettings.PaperSize.Width = 214;
-            //e.PageSettings.PaperSize.Height= 105;
-            //  e.PageSettings.PrinterSettings.DefaultPageSettings.PaperSize = ;
-            e.Graphics.DrawString("Vehical No:  " + veh_no, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 250));
-            e.Graphics.DrawString("Create Date:  " + cr_date, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 300));
-            e.Graphics.DrawString("Final Date:  " + mdate, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 350));
-            e.Graphics.DrawString(dt.Rows[0][0].ToString(), new Font("Arial", 12, FontStyle.Bold), Brushes.Black, new Point(150, 25));
-            // e.Graphics.DrawString(dt.Rows[0][1].ToString(), new Font("Arial", 9, FontStyle.Bold), Brushes.Black, new Point(90, 50));
-            // Define the font and header text
-            string headerText = dt.Rows[0][1].ToString();
-            Font headerFont = new Font("Arial", 9, FontStyle.Bold);
-            // Set the starting point for the header
-            PointF headerPoint = new PointF(70, 50);
-            // Draw the header text
-            e.Graphics.DrawString(headerText, headerFont, Brushes.Black, headerPoint);
-            // Measure the size of the header text to calculate the underline position
-            SizeF headerSize = e.Graphics.MeasureString(headerText, headerFont);
-            // Draw a line underneath the header
-            float underlineY = headerPoint.Y + headerSize.Height + 5;  // 5 pixels below the header
-            e.Graphics.DrawLine(Pens.Black, headerPoint.X, underlineY, headerPoint.X + headerSize.Width, underlineY);
-            // Optional: You can add more content below the header if needed
-            e.Graphics.DrawString("Slip No:  " + main.prn_slipno, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 100));
-            e.Graphics.DrawString("Party Name:  " + main.prn_partyname, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 100));
-            e.Graphics.DrawString("Challan No:  " + main.t_no, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 150));
-            e.Graphics.DrawString("Product:  " + main.prn_product, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 150));
-            e.Graphics.DrawString("Vehicle Type:  " + main.prn_vehicle_type, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 200));
-            e.Graphics.DrawString("Charges:  " + main.prn_charges, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 200));
-            e.Graphics.DrawString("Operator Name:  " + main.prn_op_name, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(350, 400));
-            e.Graphics.DrawString("Operator Sign:  ", new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 400));
-            e.Graphics.DrawString("Tare Weight:  " + main.prn_t_weight, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 250));
-            e.Graphics.DrawString("Gross Weight:  " + main.prn_g_weight, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 300));
-            e.Graphics.DrawString("Net Weight:  " + main.prn_n_weight, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 350));
-            //refresh----------------
+            Font plantFont = new Font("Arial", 11, FontStyle.Bold);
+            Font addrFont = new Font("Arial", 8.5f, FontStyle.Regular);
+            Font labelFont = new Font("Arial", 9, FontStyle.Bold);
+            Font valueFont = new Font("Arial", 9, FontStyle.Regular);
+            Font weightLabelFont = new Font("Arial", 9, FontStyle.Bold);
+            Font weightValueFont = new Font("Arial", 12, FontStyle.Bold);
+
+            // Outer Frame (Width: 690px, Height: 335px)
+            g.DrawRectangle(borderPen, 15, 10, 690, 335);
+
+            // Header Separator Line
+            g.DrawLine(borderPen, 15, 58, 705, 58);
+
+            // Plant Header & Address
+            g.DrawString(plantName.ToUpper(), plantFont, Brushes.Black, new PointF(25, 14));
+            if (!string.IsNullOrEmpty(plantAddress))
+            {
+                g.DrawString(plantAddress, addrFont, Brushes.Black, new PointF(25, 34));
+            }
+
+            // Right-aligned Copy Type Badge (ORIGINAL / DUPLICATE SLIP)
+            string badgeText = (watermark ?? "ORIGINAL").ToUpper() + " SLIP";
+            Font badgeFont = new Font("Arial", 9, FontStyle.Bold);
+            SizeF badgeSize = g.MeasureString(badgeText, badgeFont);
+            float badgeX = 695 - badgeSize.Width - 10;
+            g.DrawRectangle(borderPen, badgeX, 14, badgeSize.Width + 8, badgeSize.Height + 4);
+            g.DrawString(badgeText, badgeFont, Brushes.Black, badgeX + 4, 16);
+
+            // 3-Column Compact Details Grid (Y: 65, 90, 115)
+            // Column 1 (X: 25), Column 2 (X: 250), Column 3 (X: 480)
+
+            // Row 1
+            g.DrawString("Slip No:", labelFont, Brushes.Black, 25, 65);
+            g.DrawString(main.prn_slipno ?? "", valueFont, Brushes.Black, 95, 65);
+
+            g.DrawString("Vehicle No:", labelFont, Brushes.Black, 250, 65);
+            g.DrawString(veh_no ?? "", valueFont, Brushes.Black, 335, 65);
+
+            g.DrawString("Date/Time:", labelFont, Brushes.Black, 480, 65);
+            g.DrawString(cr_date ?? "", valueFont, Brushes.Black, 555, 65);
+
+            // Row 2
+            g.DrawString("Party Name:", labelFont, Brushes.Black, 25, 90);
+            g.DrawString(main.prn_partyname ?? "", valueFont, Brushes.Black, 105, 90);
+
+            g.DrawString("Product:", labelFont, Brushes.Black, 250, 90);
+            g.DrawString(main.prn_product ?? "", valueFont, Brushes.Black, 315, 90);
+
+            g.DrawString("Final Date:", labelFont, Brushes.Black, 480, 90);
+            g.DrawString(mdate ?? "", valueFont, Brushes.Black, 555, 90);
+
+            // Row 3
+            g.DrawString("Challan No:", labelFont, Brushes.Black, 25, 115);
+            g.DrawString(main.t_no ?? "", valueFont, Brushes.Black, 105, 115);
+
+            g.DrawString("Vehicle Type:", labelFont, Brushes.Black, 250, 115);
+            g.DrawString(main.prn_vehicle_type ?? "", valueFont, Brushes.Black, 340, 115);
+
+            g.DrawString("Charges:", labelFont, Brushes.Black, 480, 115);
+            g.DrawString(main.prn_charges ?? "", valueFont, Brushes.Black, 545, 115);
+
+            // Divider Line before Weight Table
+            g.DrawLine(thinPen, 15, 140, 705, 140);
+
+            // Weight Table Box (Y: 146 to 220, Height: 74px)
+            g.DrawRectangle(thinPen, 25, 146, 670, 74);
+            g.DrawLine(thinPen, 248, 146, 248, 220);
+            g.DrawLine(thinPen, 471, 146, 471, 220);
+            g.DrawLine(dashPen, 25, 170, 695, 170);
+
+            // Weight Table Headers
+            g.DrawString("GROSS WEIGHT", weightLabelFont, Brushes.Black, 80, 150);
+            g.DrawString("TARE WEIGHT", weightLabelFont, Brushes.Black, 305, 150);
+            g.DrawString("NET WEIGHT", weightLabelFont, Brushes.Black, 530, 150);
+
+            // Weight Table Values
+            g.DrawString((main.prn_g_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 75, 182);
+            g.DrawString((main.prn_t_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 300, 182);
+            g.DrawString((main.prn_n_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 525, 182);
+
+            // Bottom Section Lines & Signatures
+            g.DrawLine(thinPen, 15, 230, 705, 230);
+
+            g.DrawString("Operator: " + (main.prn_op_name ?? ""), labelFont, Brushes.Black, 25, 240);
+
+            // Signatures
+            g.DrawLine(thinPen, 50, 305, 210, 305);
+            g.DrawString("Driver Signature", addrFont, Brushes.Black, 80, 310);
+
+            g.DrawLine(thinPen, 500, 305, 660, 305);
+            g.DrawString("Operator Signature", addrFont, Brushes.Black, 525, 310);
+
+            // Refresh / Clear form fields after print
             slipno_box.Clear();
             weight_box.Clear();
             tire_weight_box.Clear();
@@ -1110,8 +1174,6 @@ namespace login
             Party_box.Clear();
             net_weight_box.Clear();
             tokenNo_box.Clear();
-
-
         }
 
         private void label11_Click(object sender, EventArgs e)

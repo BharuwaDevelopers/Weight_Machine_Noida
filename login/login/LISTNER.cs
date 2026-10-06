@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -29,38 +29,62 @@ namespace login.Serial
         {
             _spManager = new SerialPortManager();
             SerialSettings mySerialSettings = _spManager.CurrentSerialSettings;
-            //serialSettingsBindingSource.DataSource = mySerialSettings;
-            SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-            SqlDataAdapter sda = new SqlDataAdapter("Select * from machine_master where m_status = 'Active' ", db_connect);
-            DataTable dt = new DataTable();
-            sda.Fill(dt);
-            Console.WriteLine("mechine master is @@###" + dt.Rows[0][1]) ;
-            Console.WriteLine("mechine master is @@###" + dt.Rows[0][2]);
-            Console.WriteLine("mechine master is @@###" + dt.Rows[0][3]);
-            Console.WriteLine("mechine master is @@###" + dt.Rows[0][4]);
-            Console.WriteLine("mechine master is @@###" + dt.Rows[0][5]);
-            string stop_bit = dt.Rows[0][5].ToString().Trim();
-            portNameComboBox.Text = dt.Rows[0][1].ToString().Trim();
-            baudRateComboBox.Text = dt.Rows[0][2].ToString().Trim();
-            dataBitsComboBox.Text = dt.Rows[0][3].ToString().Trim();
-            parityComboBox.Text = dt.Rows[0][4].ToString().Trim();
-            stopBitsComboBox.Text = dt.Rows[0][5].ToString().Trim();
-            //portNameComboBox.Text = "COM4";
-            //baudRateComboBox.Text = "9600";
-            //dataBitsComboBox.Text = "8";
-            //parityComboBox.Text = "None";
-            //stopBitsComboBox.Text = "0";
+            serialSettingsBindingSource.DataSource = mySerialSettings;
 
+            try
+            {
+                using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                {
+                    db_connect.Open();
+                    using (SqlDataAdapter sda = new SqlDataAdapter("Select * from machine_master where m_status = 'Active' ", db_connect))
+                    {
+                        DataTable dt = new DataTable();
+                        sda.Fill(dt);
+                        if (dt.Rows.Count > 0)
+                        {
+                            string port = dt.Rows[0][1]?.ToString().Trim();
+                            string baud = dt.Rows[0][2]?.ToString().Trim();
+                            string data = dt.Rows[0][3]?.ToString().Trim();
+                            string parity = dt.Rows[0][4]?.ToString().Trim();
+                            string stop = dt.Rows[0][5]?.ToString().Trim();
 
-
-
-
-           
-            //portNameComboBox.DataSource = mySerialSettings.PortNameCollection;
-           // baudRateComboBox.DataSource = mySerialSettings.BaudRateCollection;
-            //dataBitsComboBox.DataSource = mySerialSettings.DataBitsCollection;
-            //parityComboBox.DataSource = Enum.GetValues(typeof(System.IO.Ports.Parity));
-            //stopBitsComboBox.DataSource = Enum.GetValues(typeof(System.IO.Ports.StopBits));
+                            if (!string.IsNullOrEmpty(port))
+                            {
+                                mySerialSettings.PortName = port;
+                                portNameComboBox.Text = port;
+                            }
+                            if (int.TryParse(baud, out int bVal))
+                            {
+                                mySerialSettings.BaudRate = bVal;
+                                baudRateComboBox.Text = baud;
+                            }
+                            if (int.TryParse(data, out int dVal))
+                            {
+                                mySerialSettings.DataBits = dVal;
+                                dataBitsComboBox.Text = data;
+                            }
+                            if (!string.IsNullOrEmpty(parity))
+                            {
+                                parityComboBox.Text = parity;
+                                System.IO.Ports.Parity pVal;
+                                if (Enum.TryParse(parity, true, out pVal))
+                                    mySerialSettings.Parity = pVal;
+                            }
+                            if (!string.IsNullOrEmpty(stop))
+                            {
+                                stopBitsComboBox.Text = stop;
+                                System.IO.Ports.StopBits sVal;
+                                if (Enum.TryParse(stop, true, out sVal))
+                                    mySerialSettings.StopBits = sVal;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UserInitialization serial error: " + ex.Message);
+            }
 
             _spManager.NewSerialDataRecieved += new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
@@ -251,34 +275,42 @@ namespace login.Serial
 
         public void LISTNER_Load(object sender, EventArgs e)
         {
-            //this.Hide();
             try
             {
                 string m_status = "Active";
-                SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-                db_connect.Open();
-                SqlDataAdapter sda = new SqlDataAdapter("Select * from machine_master where m_status='" + m_status + "' ", db_connect);
-                DataTable dt = new DataTable();
-                sda.Fill(dt);
-                Console.WriteLine(dt.Rows[0][0]);
-                active_mech = dt.Rows[0][0].ToString();
-                Console.WriteLine(dt.Rows[0][1]);
-                Console.WriteLine(dt.Rows[0][2]);
-                Console.WriteLine(dt.Rows[0][3]);
-                Console.WriteLine(dt.Rows[0][4]);
-                Console.WriteLine(dt.Rows[0][5]);
-                db_connect.Close();
+                using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                {
+                    db_connect.Open();
+                    using (SqlDataAdapter sda = new SqlDataAdapter("Select * from machine_master where m_status='" + m_status + "' ", db_connect))
+                    {
+                        DataTable dt = new DataTable();
+                        sda.Fill(dt);
+                        if (dt.Rows.Count > 0)
+                        {
+                            active_mech = dt.Rows[0][0]?.ToString();
+                            string port = dt.Rows[0][1]?.ToString().Trim();
+                            if (!string.IsNullOrEmpty(port) && _spManager != null && _spManager.CurrentSerialSettings != null)
+                            {
+                                _spManager.CurrentSerialSettings.PortName = port;
+                            }
+                        }
+                    }
+                }
             }
-
-            catch(Exception EX)
+            catch (Exception EX)
             {
-                MessageBox.Show("EX"+EX);
+                Console.WriteLine("LISTNER_Load error: " + EX.Message);
             }
-            //_spManager.StartListening();
 
-         _spManager.StartListening();
-           
-
+            try
+            {
+                if (_spManager != null)
+                    _spManager.StartListening();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("StartListening error: " + ex.Message);
+            }
         }
 
       
@@ -294,7 +326,10 @@ namespace login.Serial
 
         private void portNameComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (_spManager != null && _spManager.CurrentSerialSettings != null && !string.IsNullOrWhiteSpace(portNameComboBox.Text))
+            {
+                _spManager.CurrentSerialSettings.PortName = portNameComboBox.Text.Trim();
+            }
         }
     }
 }

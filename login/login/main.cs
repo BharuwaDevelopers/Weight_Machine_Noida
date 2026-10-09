@@ -1008,19 +1008,69 @@ namespace login
             }
 
             System.Drawing.Printing.PrintDocument printDocument = new PrintDocument();
-            // Custom compact paper size for Dot Matrix printer paper saving (Width: 7.2" / 720, Height: 3.6" / 360)
-            PaperSize customPaperSize = new PaperSize("DotMatrix_PaperSave", 720, 360);
-            printDocument.DefaultPageSettings.PaperSize = customPaperSize;
-            printDocument.DefaultPageSettings.Margins = new Margins(10, 10, 10, 10);
             
-            // Attach the PrintPage event
+            // Force 1 single copy (prevents printer driver defaulting to 2 copies)
+            printDocument.PrinterSettings.Copies = 1;
+            
+            // 1. Zero out page margins so tractor feed paper starts at exact content boundary
+            printDocument.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+            printDocument.OriginAtMargins = false;
+
+            // 2. Custom compact paper size for TVS Dot Matrix printer (Target: ~3.14" height / 314 hundredths)
+            PaperSize customPaperSize = new PaperSize("DotMatrix_PaperSave", 760, 314);
+            PaperSize bestPaperSize = null;
+
+            try
+            {
+                foreach (PaperSize ps in printDocument.PrinterSettings.PaperSizes)
+                {
+                    // 1. Prioritize any custom form created in Windows named Weighbridge or Slip
+                    if (ps.PaperName.IndexOf("Weighbridge", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        ps.PaperName.IndexOf("Slip", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        bestPaperSize = ps;
+                        break;
+                    }
+
+                    // 2. Find smallest height continuous paper form supported by TVS driver (e.g. 3.0" - 5.5" height)
+                    if (ps.Height >= 250 && ps.Height <= 550)
+                    {
+                        if (bestPaperSize == null || ps.Height < bestPaperSize.Height)
+                        {
+                            bestPaperSize = ps;
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            if (bestPaperSize != null)
+            {
+                printDocument.DefaultPageSettings.PaperSize = bestPaperSize;
+                try
+                {
+                    printDocument.PrinterSettings.DefaultPageSettings.PaperSize = bestPaperSize;
+                }
+                catch { }
+            }
+            else
+            {
+                printDocument.DefaultPageSettings.PaperSize = customPaperSize;
+                try
+                {
+                    printDocument.PrinterSettings.DefaultPageSettings.PaperSize = customPaperSize;
+                }
+                catch { }
+            }
+            
+            // 4. Attach the PrintPage event
             printDocument.PrintPage += slpprintDocument1_PrintPage;
             
             // Create and configure the PrintPreviewDialog
             PrintPreviewDialog printPreviewDialog = new PrintPreviewDialog();
             printPreviewDialog.Document = printDocument;
-            printPreviewDialog.Width = 850;
-            printPreviewDialog.Height = 550;
+            printPreviewDialog.Width = 900;
+            printPreviewDialog.Height = 600;
             printPreviewDialog.StartPosition = FormStartPosition.CenterScreen;
             printPreviewDialog.ShowDialog();
 
@@ -1054,111 +1104,118 @@ namespace login
 
             Graphics g = e.Graphics;
 
+            // 100% Crisp Dot-Matrix Text Rendering (Disables blurry anti-aliasing)
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+
             // Background Watermark (Light Gray rotated watermark)
             if (!string.IsNullOrEmpty(watermark))
             {
-                Font wmFont = new Font("Arial", 36, FontStyle.Bold);
+                Font wmFont = new Font("Arial", 32, FontStyle.Bold);
                 g.RotateTransform(-20);
                 g.DrawString(watermark.ToUpper(), wmFont, new SolidBrush(Color.FromArgb(230, 230, 230)), new PointF(10, 200));
                 g.ResetTransform();
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
             }
 
-            // Pens & Fonts optimized for Dot Matrix clarity
+            // Pens & Fonts optimized for Dot Matrix sharpness without text overlap
             Pen borderPen = new Pen(Color.Black, 1.5f);
             Pen thinPen = new Pen(Color.Black, 1.0f);
             Pen dashPen = new Pen(Color.Black, 1.0f) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash };
 
-            Font plantFont = new Font("Arial", 11, FontStyle.Bold);
-            Font addrFont = new Font("Arial", 8.5f, FontStyle.Regular);
-            Font labelFont = new Font("Arial", 9, FontStyle.Bold);
-            Font valueFont = new Font("Arial", 9, FontStyle.Regular);
-            Font weightLabelFont = new Font("Arial", 9, FontStyle.Bold);
-            Font weightValueFont = new Font("Arial", 12, FontStyle.Bold);
+            Font plantFont = new Font("Arial", 11f, FontStyle.Bold);
+            Font addrFont = new Font("Arial", 8.5f, FontStyle.Bold);
+            Font labelFont = new Font("Arial", 9f, FontStyle.Bold);
+            Font valueFont = new Font("Arial", 9f, FontStyle.Bold);
+            Font weightLabelFont = new Font("Arial", 9.5f, FontStyle.Bold);
+            Font weightValueFont = new Font("Arial", 12.5f, FontStyle.Bold);
 
-            // Outer Frame (Width: 690px, Height: 335px)
-            g.DrawRectangle(borderPen, 15, 10, 690, 335);
+            // Outer Frame (X: 25, Y: 2, Width: 710px, Height: 310px)
+            g.DrawRectangle(borderPen, 25, 2, 710, 310);
 
             // Header Separator Line
-            g.DrawLine(borderPen, 15, 58, 705, 58);
+            g.DrawLine(borderPen, 25, 50, 735, 50);
 
             // Plant Header & Address
-            g.DrawString(plantName.ToUpper(), plantFont, Brushes.Black, new PointF(25, 14));
+            g.DrawString(plantName.ToUpper(), plantFont, Brushes.Black, new PointF(35, 8));
             if (!string.IsNullOrEmpty(plantAddress))
             {
-                g.DrawString(plantAddress, addrFont, Brushes.Black, new PointF(25, 34));
+                g.DrawString(plantAddress, addrFont, Brushes.Black, new PointF(35, 28));
             }
 
             // Right-aligned Copy Type Badge (ORIGINAL / DUPLICATE SLIP)
             string badgeText = (watermark ?? "ORIGINAL").ToUpper() + " SLIP";
-            Font badgeFont = new Font("Arial", 9, FontStyle.Bold);
+            Font badgeFont = new Font("Arial", 9f, FontStyle.Bold);
             SizeF badgeSize = g.MeasureString(badgeText, badgeFont);
-            float badgeX = 695 - badgeSize.Width - 10;
-            g.DrawRectangle(borderPen, badgeX, 14, badgeSize.Width + 8, badgeSize.Height + 4);
-            g.DrawString(badgeText, badgeFont, Brushes.Black, badgeX + 4, 16);
+            float badgeX = 725 - badgeSize.Width - 10;
+            g.DrawRectangle(borderPen, badgeX, 8, badgeSize.Width + 8, badgeSize.Height + 4);
+            g.DrawString(badgeText, badgeFont, Brushes.Black, badgeX + 4, 10);
 
-            // 3-Column Compact Details Grid (Y: 65, 90, 115)
-            // Column 1 (X: 25), Column 2 (X: 250), Column 3 (X: 480)
-
+            // 3-Column Compact Details Grid (Y: 60, 83, 106)
             // Row 1
-            g.DrawString("Slip No:", labelFont, Brushes.Black, 25, 65);
-            g.DrawString(main.prn_slipno ?? "", valueFont, Brushes.Black, 95, 65);
+            g.DrawString("Slip No:", labelFont, Brushes.Black, 35, 60);
+            g.DrawString(main.prn_slipno ?? "", valueFont, Brushes.Black, 100, 60);
 
-            g.DrawString("Vehicle No:", labelFont, Brushes.Black, 250, 65);
-            g.DrawString(veh_no ?? "", valueFont, Brushes.Black, 335, 65);
+            g.DrawString("Vehicle No:", labelFont, Brushes.Black, 275, 60);
+            g.DrawString(veh_no ?? "", valueFont, Brushes.Black, 365, 60);
 
-            g.DrawString("Date/Time:", labelFont, Brushes.Black, 480, 65);
-            g.DrawString(cr_date ?? "", valueFont, Brushes.Black, 555, 65);
+            g.DrawString("Date/Time:", labelFont, Brushes.Black, 515, 60);
+            g.DrawString(cr_date ?? "", valueFont, Brushes.Black, 595, 60);
 
             // Row 2
-            g.DrawString("Party Name:", labelFont, Brushes.Black, 25, 90);
-            g.DrawString(main.prn_partyname ?? "", valueFont, Brushes.Black, 105, 90);
+            g.DrawString("Party Name:", labelFont, Brushes.Black, 35, 83);
+            g.DrawString(main.prn_partyname ?? "", valueFont, Brushes.Black, 120, 83);
 
-            g.DrawString("Product:", labelFont, Brushes.Black, 250, 90);
-            g.DrawString(main.prn_product ?? "", valueFont, Brushes.Black, 315, 90);
+            g.DrawString("Product:", labelFont, Brushes.Black, 275, 83);
+            g.DrawString(main.prn_product ?? "", valueFont, Brushes.Black, 345, 83);
 
-            g.DrawString("Final Date:", labelFont, Brushes.Black, 480, 90);
-            g.DrawString(mdate ?? "", valueFont, Brushes.Black, 555, 90);
+            g.DrawString("Final Date:", labelFont, Brushes.Black, 515, 83);
+            g.DrawString(mdate ?? "", valueFont, Brushes.Black, 595, 83);
 
             // Row 3
-            g.DrawString("Challan No:", labelFont, Brushes.Black, 25, 115);
-            g.DrawString(main.t_no ?? "", valueFont, Brushes.Black, 105, 115);
+            g.DrawString("Challan No:", labelFont, Brushes.Black, 35, 106);
+            g.DrawString(main.t_no ?? "", valueFont, Brushes.Black, 120, 106);
 
-            g.DrawString("Vehicle Type:", labelFont, Brushes.Black, 250, 115);
-            g.DrawString(main.prn_vehicle_type ?? "", valueFont, Brushes.Black, 340, 115);
+            g.DrawString("Vehicle Type:", labelFont, Brushes.Black, 275, 106);
+            g.DrawString(main.prn_vehicle_type ?? "", valueFont, Brushes.Black, 375, 106);
 
-            g.DrawString("Charges:", labelFont, Brushes.Black, 480, 115);
-            g.DrawString(main.prn_charges ?? "", valueFont, Brushes.Black, 545, 115);
+            g.DrawString("Charges:", labelFont, Brushes.Black, 515, 106);
+            g.DrawString(main.prn_charges ?? "", valueFont, Brushes.Black, 580, 106);
 
             // Divider Line before Weight Table
-            g.DrawLine(thinPen, 15, 140, 705, 140);
+            g.DrawLine(thinPen, 25, 129, 735, 129);
 
-            // Weight Table Box (Y: 146 to 220, Height: 74px)
-            g.DrawRectangle(thinPen, 25, 146, 670, 74);
-            g.DrawLine(thinPen, 248, 146, 248, 220);
-            g.DrawLine(thinPen, 471, 146, 471, 220);
-            g.DrawLine(dashPen, 25, 170, 695, 170);
+            // Weight Table Box (Width: 690px, Height: 68px)
+            g.DrawRectangle(thinPen, 35, 135, 690, 68);
+            g.DrawLine(thinPen, 265, 135, 265, 203);
+            g.DrawLine(thinPen, 495, 135, 495, 203);
+            g.DrawLine(dashPen, 35, 157, 725, 157);
 
             // Weight Table Headers
-            g.DrawString("GROSS WEIGHT", weightLabelFont, Brushes.Black, 80, 150);
-            g.DrawString("TARE WEIGHT", weightLabelFont, Brushes.Black, 305, 150);
-            g.DrawString("NET WEIGHT", weightLabelFont, Brushes.Black, 530, 150);
+            g.DrawString("GROSS WEIGHT", weightLabelFont, Brushes.Black, 90, 139);
+            g.DrawString("TARE WEIGHT", weightLabelFont, Brushes.Black, 320, 139);
+            g.DrawString("NET WEIGHT", weightLabelFont, Brushes.Black, 550, 139);
 
             // Weight Table Values
-            g.DrawString((main.prn_g_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 75, 182);
-            g.DrawString((main.prn_t_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 300, 182);
-            g.DrawString((main.prn_n_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 525, 182);
+            g.DrawString((main.prn_g_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 85, 169);
+            g.DrawString((main.prn_t_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 315, 169);
+            g.DrawString((main.prn_n_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, 545, 169);
 
             // Bottom Section Lines & Signatures
-            g.DrawLine(thinPen, 15, 230, 705, 230);
+            g.DrawLine(thinPen, 25, 211, 735, 211);
 
-            g.DrawString("Operator: " + (main.prn_op_name ?? ""), labelFont, Brushes.Black, 25, 240);
+            g.DrawString("Operator: " + (main.prn_op_name ?? ""), labelFont, Brushes.Black, 35, 219);
 
-            // Signatures
-            g.DrawLine(thinPen, 50, 305, 210, 305);
-            g.DrawString("Driver Signature", addrFont, Brushes.Black, 80, 310);
+            // Signatures (Moved up to Y: 277 to prevent bottom clipping)
+            g.DrawLine(thinPen, 60, 277, 240, 277);
+            g.DrawString("Driver Signature", addrFont, Brushes.Black, 95, 282);
 
-            g.DrawLine(thinPen, 500, 305, 660, 305);
-            g.DrawString("Operator Signature", addrFont, Brushes.Black, 525, 310);
+            g.DrawLine(thinPen, 520, 277, 700, 277);
+            g.DrawString("Operator Signature", addrFont, Brushes.Black, 545, 282);
+
+            // Signal single-page output (prevents trailing blank pages on dot matrix / PDF printers)
+            e.HasMorePages = false;
 
             // Refresh / Clear form fields after print
             slipno_box.Clear();

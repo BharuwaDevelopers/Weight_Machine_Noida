@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -29,6 +29,16 @@ namespace login.Print
 
         private void print_Click(object sender, EventArgs e)
         {
+            slip_printDocument.PrinterSettings.Copies = 1;
+            System.Drawing.Printing.PaperSize customPaperSize = new System.Drawing.Printing.PaperSize("DotMatrix_PaperSave", 780, 360);
+            slip_printDocument.DefaultPageSettings.PaperSize = customPaperSize;
+            try
+            {
+                slip_printDocument.PrinterSettings.DefaultPageSettings.PaperSize = customPaperSize;
+            }
+            catch { }
+            slip_printDocument.DefaultPageSettings.Margins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
+
             Slip_PreviewDialog.Document = slip_printDocument;
             Slip_PreviewDialog.ShowDialog();
         }
@@ -57,6 +67,7 @@ namespace login.Print
             e.Graphics.DrawString("Gross Weight:  " +  main.prn_g_weight, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 300));
             e.Graphics.DrawString("Net Weight:  " + main.prn_n_weight, new Font("Arial", 12, FontStyle.Regular), Brushes.Black, new Point(25, 350));
 
+            e.HasMorePages = false;
         }
 
         private void Slip_PreviewDialog_Load(object sender, EventArgs e)

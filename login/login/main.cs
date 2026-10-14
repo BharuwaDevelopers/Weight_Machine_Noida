@@ -141,18 +141,39 @@ namespace login
                 string grossRaw1 = weight_box.Text != null ? weight_box.Text.Trim() : "";
                 if (string.IsNullOrEmpty(grossRaw1))
                 {
-                    MessageBox.Show("Please Enter Gross Weight before saving.", "Gross Weight Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    weight_box.Focus();
-                    return;
+                    //MessageBox.Show("Please Enter Gross Weight before saving.", "Gross Weight Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //weight_box.Focus();
+                    //return;
                 }
                 int grossCheck;
                 if (!int.TryParse(grossRaw1, out grossCheck))
                 {
-                    MessageBox.Show("Gross Weight must be a valid number.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //MessageBox.Show("Gross Weight must be a valid number.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //weight_box.Focus();
+                    //return;
+                }
+                string tareRaw1 = tire_weight_box.Text != null ? tire_weight_box.Text.Trim() : "";
+                if (string.IsNullOrEmpty(tareRaw1))
+                {
+                    //MessageBox.Show("Please Enter Gross Weight before saving.", "Gross Weight Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //weight_box.Focus();
+                    //return;
+                }
+                int tareCheck;
+                if (!int.TryParse(tareRaw1, out tareCheck))
+                {
+                    //MessageBox.Show("Gross Weight must be a valid number.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //weight_box.Focus();
+                    //return;
+                }
+                
+                if (tareCheck <= 0 && grossCheck<=0)
+                {
+                    MessageBox.Show("Tare Weight cannot be Zero or negative. Please enter a valid weight.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     weight_box.Focus();
                     return;
                 }
-                if (grossCheck <= 0)
+                if (grossCheck <= 0 && tareCheck<=0)
                 {
                     MessageBox.Show("Gross Weight cannot be Zero or negative. Please enter a valid weight.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     weight_box.Focus();
@@ -1262,7 +1283,7 @@ namespace login
             float startX = 20;
             float frameWidth = 740;
             float rightX = startX + frameWidth; // 760
-            float frameHeight = 310;
+            float frameHeight = 325;
 
             // Outer Frame
             g.DrawRectangle(borderPen, startX, 2, frameWidth, frameHeight);
@@ -1286,25 +1307,22 @@ namespace login
             g.DrawRectangle(borderPen, badgeX, 8, badgeBoxW, badgeSize.Height + 4);
             g.DrawString(badgeText, badgeFont, Brushes.Black, badgeX + 4, 10);
 
-            // 3-Column Compact Details Grid (Y: 60, 83, 106)
-            // Row 1
-            g.DrawString("Slip No:", labelFont, Brushes.Black, startX + 10, 60);
-            g.DrawString(main.prn_slipno ?? "", valueFont, Brushes.Black, startX + 85, 60);
+            // 4-Row Compact Details Grid (Party Name and Product on separate rows to completely avoid overlap)
+            // Row 1 (Y: 58)
+            g.DrawString("Slip No:", labelFont, Brushes.Black, startX + 10, 58);
+            g.DrawString(main.prn_slipno ?? "", valueFont, Brushes.Black, startX + 85, 58);
 
-            g.DrawString("Vehicle No:", labelFont, Brushes.Black, startX + 265, 60);
-            g.DrawString(veh_no ?? "", valueFont, Brushes.Black, startX + 360, 60);
+            g.DrawString("Vehicle No:", labelFont, Brushes.Black, startX + 265, 58);
+            g.DrawString(veh_no ?? "", valueFont, Brushes.Black, startX + 360, 58);
 
-            g.DrawString("Date/Time:", labelFont, Brushes.Black, startX + 505, 60);
-            g.DrawString(cr_date ?? "", valueFont, Brushes.Black, startX + 590, 60);
+            g.DrawString("Date/Time:", labelFont, Brushes.Black, startX + 505, 58);
+            g.DrawString(cr_date ?? "", valueFont, Brushes.Black, startX + 590, 58);
 
-            // Row 2
-            g.DrawString("Party Name:", labelFont, Brushes.Black, startX + 10, 83);
-            g.DrawString(main.prn_partyname ?? "", valueFont, Brushes.Black, startX + 100, 83);
+            // Row 2 (Y: 80): Party Name (Left - wide 395px area) & Final Date (Right)
+            g.DrawString("Party Name:", labelFont, Brushes.Black, startX + 10, 80);
+            g.DrawString(main.prn_partyname ?? "", valueFont, Brushes.Black, new RectangleF(startX + 100, 80, 395, 20));
 
-            g.DrawString("Product:", labelFont, Brushes.Black, startX + 265, 83);
-            g.DrawString(main.prn_product ?? "", valueFont, Brushes.Black, startX + 340, 83);
-
-            g.DrawString("Final Date:", labelFont, Brushes.Black, startX + 505, 83);
+            g.DrawString("Final Date:", labelFont, Brushes.Black, startX + 505, 80);
 
             string gStr = main.prn_g_weight != null ? main.prn_g_weight.Trim() : "";
             string tStr = main.prn_t_weight != null ? main.prn_t_weight.Trim() : "";
@@ -1318,61 +1336,68 @@ namespace login
             if (shouldPrintFinalDate)
             {
                 string finalDateToPrint = !string.IsNullOrWhiteSpace(mdate) ? mdate : (!string.IsNullOrWhiteSpace(cr_date) ? cr_date : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                g.DrawString(finalDateToPrint, valueFont, Brushes.Black, startX + 590, 83);
+                g.DrawString(finalDateToPrint, valueFont, Brushes.Black, startX + 590, 80);
             }
 
-            // Row 3
-            g.DrawString("Challan No:", labelFont, Brushes.Black, startX + 10, 106);
-            g.DrawString(main.t_no ?? "", valueFont, Brushes.Black, startX + 100, 106);
+            // Row 3 (Y: 102): Product (Left - wide 395px area) & Vehicle Type (Right)
+            g.DrawString("Product:", labelFont, Brushes.Black, startX + 10, 102);
+            g.DrawString(main.prn_product ?? "", valueFont, Brushes.Black, new RectangleF(startX + 100, 102, 395, 20));
 
-            g.DrawString("Vehicle Type:", labelFont, Brushes.Black, startX + 265, 106);
-            g.DrawString(main.prn_vehicle_type ?? "", valueFont, Brushes.Black, startX + 370, 106);
+            g.DrawString("Vehicle Type:", labelFont, Brushes.Black, startX + 505, 102);
+            g.DrawString(main.prn_vehicle_type ?? "", valueFont, Brushes.Black, startX + 605, 102);
 
-            g.DrawString("Charges:", labelFont, Brushes.Black, startX + 505, 106);
-            g.DrawString(main.prn_charges ?? "", valueFont, Brushes.Black, startX + 575, 106);
+            // Row 4 (Y: 124): Challan No (Left) & Charges (Right)
+            g.DrawString("Challan No:", labelFont, Brushes.Black, startX + 10, 124);
+            g.DrawString(main.t_no ?? "", valueFont, Brushes.Black, startX + 100, 124);
+
+            g.DrawString("Charges:", labelFont, Brushes.Black, startX + 505, 124);
+            g.DrawString(main.prn_charges ?? "", valueFont, Brushes.Black, startX + 575, 124);
 
             // Divider Line before Weight Table
-            g.DrawLine(thinPen, startX, 129, rightX, 129);
+            g.DrawLine(thinPen, startX, 146, rightX, 146);
 
-            // Weight Table Box (Width: 720px, Height: 68px)
+            // Weight Table Box (Width: 720px, Height: 68px, Y: 152 to 220)
             float tableX = startX + 10;
             float tableW = frameWidth - 20; // 720
             float tableRight = tableX + tableW; // 750
             float colW = tableW / 3f; // 240
+            float tableY = 152;
+            float tableH = 68;
 
-            g.DrawRectangle(thinPen, tableX, 135, tableW, 68);
-            g.DrawLine(thinPen, tableX + colW, 135, tableX + colW, 203);
-            g.DrawLine(thinPen, tableX + (colW * 2), 135, tableX + (colW * 2), 203);
-            g.DrawLine(dashPen, tableX, 157, tableRight, 157);
+            g.DrawRectangle(thinPen, tableX, tableY, tableW, tableH);
+            g.DrawLine(thinPen, tableX + colW, tableY, tableX + colW, tableY + tableH);
+            g.DrawLine(thinPen, tableX + (colW * 2), tableY, tableX + (colW * 2), tableY + tableH);
+            g.DrawLine(dashPen, tableX, tableY + 22, tableRight, tableY + 22);
 
             // Centered Weight Table Headers & Values
             using (StringFormat sfCenter = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
             {
                 // Weight Table Headers
-                g.DrawString("GROSS WEIGHT", weightLabelFont, Brushes.Black, new RectangleF(tableX, 135, colW, 22), sfCenter);
-                g.DrawString("TARE WEIGHT", weightLabelFont, Brushes.Black, new RectangleF(tableX + colW, 135, colW, 22), sfCenter);
-                g.DrawString("NET WEIGHT", weightLabelFont, Brushes.Black, new RectangleF(tableX + (colW * 2), 135, colW, 22), sfCenter);
+                g.DrawString("GROSS WEIGHT", weightLabelFont, Brushes.Black, new RectangleF(tableX, tableY, colW, 22), sfCenter);
+                g.DrawString("TARE WEIGHT", weightLabelFont, Brushes.Black, new RectangleF(tableX + colW, tableY, colW, 22), sfCenter);
+                g.DrawString("NET WEIGHT", weightLabelFont, Brushes.Black, new RectangleF(tableX + (colW * 2), tableY, colW, 22), sfCenter);
 
                 // Weight Table Values
-                g.DrawString((main.prn_g_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, new RectangleF(tableX, 157, colW, 46), sfCenter);
-                g.DrawString((main.prn_t_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, new RectangleF(tableX + colW, 157, colW, 46), sfCenter);
-                g.DrawString((main.prn_n_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, new RectangleF(tableX + (colW * 2), 157, colW, 46), sfCenter);
+                g.DrawString((main.prn_g_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, new RectangleF(tableX, tableY + 22, colW, 46), sfCenter);
+                g.DrawString((main.prn_t_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, new RectangleF(tableX + colW, tableY + 22, colW, 46), sfCenter);
+                g.DrawString((main.prn_n_weight ?? "0") + " Kg", weightValueFont, Brushes.Black, new RectangleF(tableX + (colW * 2), tableY + 22, colW, 46), sfCenter);
             }
 
             // Bottom Section Lines & Signatures
-            g.DrawLine(thinPen, startX, 211, rightX, 211);
+            g.DrawLine(thinPen, startX, 228, rightX, 228);
 
-            g.DrawString("Operator: " + (main.prn_op_name ?? ""), labelFont, Brushes.Black, startX + 10, 219);
+            g.DrawString("Operator: " + (main.prn_op_name ?? ""), labelFont, Brushes.Black, startX + 10, 236);
 
             // Signatures (Driver & Operator)
             float sigLineW = 180;
+            float sigLineY = 290;
             float driverSigX = startX + 30;
-            g.DrawLine(thinPen, driverSigX, 277, driverSigX + sigLineW, 277);
-            g.DrawString("Driver Signature", addrFont, Brushes.Black, driverSigX + 35, 282);
+            g.DrawLine(thinPen, driverSigX, sigLineY, driverSigX + sigLineW, sigLineY);
+            g.DrawString("Driver Signature", addrFont, Brushes.Black, driverSigX + 35, sigLineY + 5);
 
             float opSigX = rightX - 30 - sigLineW;
-            g.DrawLine(thinPen, opSigX, 277, opSigX + sigLineW, 277);
-            g.DrawString("Operator Signature", addrFont, Brushes.Black, opSigX + 25, 282);
+            g.DrawLine(thinPen, opSigX, sigLineY, opSigX + sigLineW, sigLineY);
+            g.DrawString("Operator Signature", addrFont, Brushes.Black, opSigX + 25, sigLineY + 5);
 
             // Signal single-page output (prevents trailing blank pages on dot matrix / PDF printers)
             e.HasMorePages = false;

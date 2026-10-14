@@ -366,10 +366,10 @@ namespace login
             this.actionButtonsPanel.Controls.Add(this.btn_refresh);
             this.actionButtonsPanel.Controls.Add(this.button2);
             this.actionButtonsPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.actionButtonsPanel.Location = new System.Drawing.Point(680, 10);
+            this.actionButtonsPanel.Location = new System.Drawing.Point(540, 10);
             this.actionButtonsPanel.Name = "actionButtonsPanel";
             this.actionButtonsPanel.Padding = new System.Windows.Forms.Padding(0, 0, 20, 0);
-            this.actionButtonsPanel.Size = new System.Drawing.Size(450, 45);
+            this.actionButtonsPanel.Size = new System.Drawing.Size(590, 45);
             this.actionButtonsPanel.TabIndex = 1;
             this.actionButtonsPanel.WrapContents = false;
             // 
@@ -407,23 +407,6 @@ namespace login
             this.print_btn.UseVisualStyleBackColor = false;
             this.print_btn.Click += new System.EventHandler(this.print_btn_Click);
             // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button2.FlatAppearance.BorderSize = 0;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(310, 0);
-            this.button2.Margin = new System.Windows.Forms.Padding(0);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(120, 42);
-            this.button2.TabIndex = 28;
-            this.button2.Text = "🚪  EXIT (Esc)";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // btn_refresh
             // 
             this.btn_refresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(217)))), ((int)(((byte)(119)))), ((int)(((byte)(6)))));
@@ -432,6 +415,7 @@ namespace login
             this.btn_refresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
             this.btn_refresh.ForeColor = System.Drawing.Color.White;
+            this.btn_refresh.Location = new System.Drawing.Point(310, 0);
             this.btn_refresh.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.btn_refresh.Name = "btn_refresh";
             this.btn_refresh.Size = new System.Drawing.Size(130, 42);
@@ -439,6 +423,23 @@ namespace login
             this.btn_refresh.Text = "🔄  REFRESH";
             this.btn_refresh.UseVisualStyleBackColor = false;
             this.btn_refresh.Click += new System.EventHandler(this.btn_refresh_Click);
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button2.FlatAppearance.BorderSize = 0;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.button2.ForeColor = System.Drawing.Color.White;
+            this.button2.Location = new System.Drawing.Point(450, 0);
+            this.button2.Margin = new System.Windows.Forms.Padding(0);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(120, 42);
+            this.button2.TabIndex = 28;
+            this.button2.Text = "🚪  EXIT (Esc)";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // mainContainer
             // 

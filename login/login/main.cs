@@ -375,6 +375,30 @@ namespace login
 
         }
 
+        private void btn_refresh_Click(object sender, EventArgs e)
+        {
+            // Clear all input fields for a fresh new slip
+            slipno_box.Text = "";
+            Vehical_box.Text = "";
+            Party_box.Text = "";
+            meterial_box.Text = "";
+            weight_box.Text = "";
+            tire_weight_box.Text = "";
+            net_weight_box.Text = "";
+            remarks_box.Text = "";
+            tokenNo_box.Text = "";
+            date_box.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            mod_date.Text = "";
+            vechaltype_drop.SelectedIndex = -1;
+            charges_drop.SelectedIndex = -1;
+
+            // Clear ref fields if they exist
+            if (ref_slipNo_box != null) ref_slipNo_box.Text = "";
+
+            // Reset focus to vehicle field
+            Vehical_box.Focus();
+        }
+
         private void weight_box_KeyUp(object sender, KeyEventArgs e)
         {
 

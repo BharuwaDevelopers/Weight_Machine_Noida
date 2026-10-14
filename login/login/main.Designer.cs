@@ -54,6 +54,7 @@ namespace login
             this.actionButtonsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.save_main = new System.Windows.Forms.Button();
             this.print_btn = new System.Windows.Forms.Button();
+            this.btn_refresh = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.mainContainer = new System.Windows.Forms.Panel();
             this.twoColumnCards = new System.Windows.Forms.TableLayoutPanel();
@@ -362,6 +363,7 @@ namespace login
             this.actionButtonsPanel.BackColor = System.Drawing.Color.Transparent;
             this.actionButtonsPanel.Controls.Add(this.save_main);
             this.actionButtonsPanel.Controls.Add(this.print_btn);
+            this.actionButtonsPanel.Controls.Add(this.btn_refresh);
             this.actionButtonsPanel.Controls.Add(this.button2);
             this.actionButtonsPanel.Dock = System.Windows.Forms.DockStyle.Right;
             this.actionButtonsPanel.Location = new System.Drawing.Point(680, 10);
@@ -421,6 +423,22 @@ namespace login
             this.button2.Text = "🚪  EXIT (Esc)";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // btn_refresh
+            // 
+            this.btn_refresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(217)))), ((int)(((byte)(119)))), ((int)(((byte)(6)))));
+            this.btn_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_refresh.FlatAppearance.BorderSize = 0;
+            this.btn_refresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.btn_refresh.ForeColor = System.Drawing.Color.White;
+            this.btn_refresh.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this.btn_refresh.Name = "btn_refresh";
+            this.btn_refresh.Size = new System.Drawing.Size(130, 42);
+            this.btn_refresh.TabIndex = 50;
+            this.btn_refresh.Text = "🔄  REFRESH";
+            this.btn_refresh.UseVisualStyleBackColor = false;
+            this.btn_refresh.Click += new System.EventHandler(this.btn_refresh_Click);
             // 
             // mainContainer
             // 
@@ -1252,5 +1270,6 @@ namespace login
         private System.Windows.Forms.Panel cardRight;
         private System.Windows.Forms.Panel pnlRightHeader;
         private System.Windows.Forms.Label lblCardRightTitle;
+        private System.Windows.Forms.Button btn_refresh;
     }
 }

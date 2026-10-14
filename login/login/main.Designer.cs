@@ -645,7 +645,7 @@ namespace login
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(142, 34);
             this.label5.TabIndex = 10;
-            this.label5.Text = "Party Name";
+            this.label5.Text = "Party Name *";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Party_box
@@ -671,7 +671,7 @@ namespace login
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(142, 34);
             this.label6.TabIndex = 11;
-            this.label6.Text = "Material / Goods";
+            this.label6.Text = "Product / Material *";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // meterial_box

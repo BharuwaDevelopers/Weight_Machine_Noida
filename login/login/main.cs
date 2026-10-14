@@ -83,6 +83,8 @@ namespace login
             get_charges();
             User_priv();
             RefreshVehicleAutoComplete();
+            RefreshPartyAutoComplete();
+            RefreshMaterialAutoComplete();
             this.Vehical_box.Leave += new System.EventHandler(this.Vehical_box_Leave);
             date_box.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             new Thread(crr_weight).Start();
@@ -110,6 +112,22 @@ namespace login
             {
                 MessageBox.Show("Please Enter Vehicle No.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Vehical_box.Focus();
+                return;
+            }
+
+            string rawParty = Party_box.Text != null ? Party_box.Text.Trim() : "";
+            if (string.IsNullOrEmpty(rawParty))
+            {
+                MessageBox.Show("Please Enter Party Name.", "Party Name Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Party_box.Focus();
+                return;
+            }
+
+            string rawMaterial = meterial_box.Text != null ? meterial_box.Text.Trim() : "";
+            if (string.IsNullOrEmpty(rawMaterial))
+            {
+                MessageBox.Show("Please Enter Product / Material Name.", "Product Name Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                meterial_box.Focus();
                 return;
             }
 
@@ -256,6 +274,8 @@ namespace login
 
                     slipno_box.Text = gen_slipno;
                     RefreshVehicleAutoComplete();
+                    RefreshPartyAutoComplete();
+                    RefreshMaterialAutoComplete();
                     MessageBox.Show("Slip No: " + gen_slipno + " Saved Successfully", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -360,6 +380,8 @@ namespace login
                     }
 
                     RefreshVehicleAutoComplete();
+                    RefreshPartyAutoComplete();
+                    RefreshMaterialAutoComplete();
                     MessageBox.Show("Slip No: " + currentSlipNo + " Updated Successfully", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -394,6 +416,10 @@ namespace login
 
             // Clear ref fields if they exist
             if (ref_slipNo_box != null) ref_slipNo_box.Text = "";
+
+            RefreshVehicleAutoComplete();
+            RefreshPartyAutoComplete();
+            RefreshMaterialAutoComplete();
 
             // Reset focus to vehicle field
             Vehical_box.Focus();
@@ -905,6 +931,92 @@ namespace login
                 }
             }
             catch { }
+        }
+
+        public void RefreshPartyAutoComplete()
+        {
+            try
+            {
+                AutoCompleteStringCollection ac = new AutoCompleteStringCollection();
+                using (SqlConnection con = new SqlConnection(db_Connection.connection_string()))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT party FROM measure WHERE party IS NOT NULL AND LTRIM(RTRIM(party)) <> '' ORDER BY party", con))
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            string p = dr[0] != null ? dr[0].ToString().Trim() : "";
+                            if (!string.IsNullOrEmpty(p))
+                            {
+                                ac.Add(p);
+                            }
+                        }
+                    }
+                }
+                if (Party_box.InvokeRequired)
+                {
+                    Party_box.BeginInvoke((MethodInvoker)delegate
+                    {
+                        Party_box.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        Party_box.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                        Party_box.AutoCompleteCustomSource = ac;
+                    });
+                }
+                else
+                {
+                    Party_box.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                    Party_box.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                    Party_box.AutoCompleteCustomSource = ac;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("RefreshPartyAutoComplete error: " + ex.Message);
+            }
+        }
+
+        public void RefreshMaterialAutoComplete()
+        {
+            try
+            {
+                AutoCompleteStringCollection ac = new AutoCompleteStringCollection();
+                using (SqlConnection con = new SqlConnection(db_Connection.connection_string()))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT meterial FROM measure WHERE meterial IS NOT NULL AND LTRIM(RTRIM(meterial)) <> '' ORDER BY meterial", con))
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            string m = dr[0] != null ? dr[0].ToString().Trim() : "";
+                            if (!string.IsNullOrEmpty(m))
+                            {
+                                ac.Add(m);
+                            }
+                        }
+                    }
+                }
+                if (meterial_box.InvokeRequired)
+                {
+                    meterial_box.BeginInvoke((MethodInvoker)delegate
+                    {
+                        meterial_box.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        meterial_box.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                        meterial_box.AutoCompleteCustomSource = ac;
+                    });
+                }
+                else
+                {
+                    meterial_box.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                    meterial_box.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                    meterial_box.AutoCompleteCustomSource = ac;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("RefreshMaterialAutoComplete error: " + ex.Message);
+            }
         }
 
         private void ref_slipNo_box_KeyDown(object sender, KeyEventArgs e)

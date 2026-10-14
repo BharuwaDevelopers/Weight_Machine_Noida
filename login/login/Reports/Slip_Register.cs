@@ -19,6 +19,7 @@ namespace login.Reports
         private Label lblSummaryBadge;
         private Button btnExportExcel;
         private Button btnRefreshData;
+        private Button btnLoadInMain;
 
         private Panel pnlFilterBar;
         private TextBox txtSearch;
@@ -48,12 +49,82 @@ namespace login.Reports
         {
             try
             {
-                this.measureTableAdapter.Fill(this.weight_bridgeDataSet1.measure);
+                Cursor.Current = Cursors.WaitCursor;
+                using (System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(db_Connection.connection_string()))
+                {
+                    con.Open();
+                    string query;
+                    if (chkUseDate != null && chkUseDate.Checked)
+                    {
+                        string fromStr = dtpFrom.Value.ToString("yyyy-MM-dd 00:00:00");
+                        string toStr = dtpTo.Value.ToString("yyyy-MM-dd 23:59:59");
+                        query = $@"SELECT charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
+                                   FROM measure 
+                                   WHERE [date] >= '{fromStr}' AND [date] <= '{toStr}'
+                                   ORDER BY slip_no DESC";
+                    }
+                    else
+                    {
+                        query = @"SELECT TOP 500 charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
+                                  FROM measure 
+                                  ORDER BY slip_no DESC";
+                    }
+
+                    using (System.Data.SqlClient.SqlDataAdapter sda = new System.Data.SqlClient.SqlDataAdapter(query, con))
+                    {
+                        this.weight_bridgeDataSet1.measure.Clear();
+                        sda.Fill(this.weight_bridgeDataSet1.measure);
+                    }
+                }
+                ApplyFilter();
                 UpdateSummaryMetrics();
             }
             catch (System.Exception ex)
             {
                 MessageBox.Show("Error loading slip register: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void SearchFromDatabase(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                LoadData();
+                return;
+            }
+
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                using (System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(db_Connection.connection_string()))
+                {
+                    con.Open();
+                    string safe = text.Replace("'", "''");
+                    string query = $@"SELECT TOP 500 charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
+                                     FROM measure 
+                                     WHERE slip_no LIKE '%{safe}%' OR vehical_no LIKE '%{safe}%' OR party LIKE '%{safe}%' OR meterial LIKE '%{safe}%'
+                                     ORDER BY slip_no DESC";
+
+                    using (System.Data.SqlClient.SqlDataAdapter sda = new System.Data.SqlClient.SqlDataAdapter(query, con))
+                    {
+                        this.weight_bridgeDataSet1.measure.Clear();
+                        sda.Fill(this.weight_bridgeDataSet1.measure);
+                    }
+                }
+                measureBindingSource.Filter = "";
+                UpdateSummaryMetrics();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error searching database: " + ex.Message, "Search Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
             }
         }
 
@@ -126,10 +197,26 @@ namespace login.Reports
                 Cursor = Cursors.Hand
             };
             btnRefreshData.FlatAppearance.BorderSize = 0;
-            btnRefreshData.Click += (s, ev) => { LoadData(); ResetFilters(); };
+            btnRefreshData.Click += (s, ev) => { ResetFilters(); };
+
+            btnLoadInMain = new Button
+            {
+                Text = "✅ Load in Form",
+                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(16, 185, 129), // emerald-500
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(130, 34),
+                Location = new Point(this.ClientSize.Width - 390, 13),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Cursor = Cursors.Hand
+            };
+            btnLoadInMain.FlatAppearance.BorderSize = 0;
+            btnLoadInMain.Click += (s, ev) => LoadSelectedSlipIntoMain();
 
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSummaryBadge);
+            pnlHeader.Controls.Add(btnLoadInMain);
             pnlHeader.Controls.Add(btnExportExcel);
             pnlHeader.Controls.Add(btnRefreshData);
 
@@ -145,6 +232,14 @@ namespace login.Reports
             Label lblSearch = new Label { Text = "🔍 Search:", Location = new Point(12, 16), AutoSize = true, Font = new Font("Segoe UI", 9, FontStyle.Bold), ForeColor = Color.FromArgb(51, 65, 85) };
             txtSearch = new TextBox { Location = new Point(85, 13), Width = 150, Font = new Font("Segoe UI", 9.5f) };
             txtSearch.TextChanged += (s, ev) => ApplyFilter();
+            txtSearch.KeyDown += (s, ev) =>
+            {
+                if (ev.KeyCode == Keys.Enter)
+                {
+                    ev.SuppressKeyPress = true;
+                    SearchFromDatabase(txtSearch.Text.Trim());
+                }
+            };
 
             Label lblParty = new Label { Text = "Party:", Location = new Point(248, 16), AutoSize = true, Font = new Font("Segoe UI", 9, FontStyle.Bold), ForeColor = Color.FromArgb(51, 65, 85) };
             txtPartyFilter = new TextBox { Location = new Point(292, 13), Width = 130, Font = new Font("Segoe UI", 9.5f) };
@@ -155,12 +250,12 @@ namespace login.Reports
             txtVehicleFilter.TextChanged += (s, ev) => ApplyFilter();
 
             chkUseDate = new CheckBox { Text = "Date Filter:", Location = new Point(620, 15), AutoSize = true, Font = new Font("Segoe UI", 9, FontStyle.Bold), ForeColor = Color.FromArgb(51, 65, 85) };
-            chkUseDate.CheckedChanged += (s, ev) => ApplyFilter();
+            chkUseDate.CheckedChanged += (s, ev) => LoadData();
 
             dtpFrom = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(710, 13), Width = 100, Font = new Font("Segoe UI", 9f) };
             dtpTo = new DateTimePicker { Format = DateTimePickerFormat.Short, Location = new Point(818, 13), Width = 100, Font = new Font("Segoe UI", 9f) };
-            dtpFrom.ValueChanged += (s, ev) => { if (chkUseDate.Checked) ApplyFilter(); };
-            dtpTo.ValueChanged += (s, ev) => { if (chkUseDate.Checked) ApplyFilter(); };
+            dtpFrom.ValueChanged += (s, ev) => { if (chkUseDate.Checked) LoadData(); };
+            dtpTo.ValueChanged += (s, ev) => { if (chkUseDate.Checked) LoadData(); };
 
             btnResetFilter = new Button
             {
@@ -239,6 +334,7 @@ namespace login.Reports
             dataGridView1.GridColor = Color.FromArgb(226, 232, 240);
             dataGridView1.BorderStyle = BorderStyle.None;
             dataGridView1.BackgroundColor = Color.White;
+            dataGridView1.RowHeadersVisible = false;
 
             MapColumnHeader("slipnoDataGridViewTextBoxColumn", "Slip No");
             MapColumnHeader("weightDataGridViewTextBoxColumn", "Gross Wt (kg)");
@@ -256,7 +352,13 @@ namespace login.Reports
             MapColumnHeader("modbyDataGridViewTextBoxColumn", "Mod By");
             MapColumnHeader("tokennoDataGridViewTextBoxColumn", "Challan / Token");
 
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            foreach (DataGridViewColumn col in dataGridView1.Columns)
+            {
+                col.MinimumWidth = 80;
+            }
+
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            dataGridView1.CellDoubleClick += (s, ev) => LoadSelectedSlipIntoMain();
         }
 
         private void MapColumnHeader(string colName, string headerText)
@@ -291,14 +393,7 @@ namespace login.Reports
                     filters.Add($"vehical_no LIKE '%{veh}%'");
                 }
 
-                if (chkUseDate.Checked)
-                {
-                    string fromStr = dtpFrom.Value.ToString("yyyy-MM-dd 00:00:00");
-                    string toStr = dtpTo.Value.ToString("yyyy-MM-dd 23:59:59");
-                    filters.Add($"[date] >= '{fromStr}' AND [date] <= '{toStr}'");
-                }
-
-                measureBindingSource.Filter = string.Join(" AND ", filters);
+                measureBindingSource.Filter = filters.Count > 0 ? string.Join(" AND ", filters) : "";
                 UpdateSummaryMetrics();
             }
             catch (Exception ex)
@@ -316,14 +411,37 @@ namespace login.Reports
             dtpFrom.Value = DateTime.Now;
             dtpTo.Value = DateTime.Now;
             measureBindingSource.Filter = "";
-            UpdateSummaryMetrics();
+            LoadData();
         }
 
         private void UpdateSummaryMetrics()
         {
             int count = measureBindingSource.Count;
             lblSummaryBadge.Text = $"Total Slips: {count}";
-            lblStatusText.Text = $"Filtered Results: {count} weighment records loaded.";
+            lblStatusText.Text = $"Showing {count} records. 💡 Double-click any slip or click 'Load in Form' to view in main window.";
+        }
+
+        private void LoadSelectedSlipIntoMain()
+        {
+            if (dataGridView1.CurrentRow != null && !dataGridView1.CurrentRow.IsNewRow)
+            {
+                object slipVal = dataGridView1.CurrentRow.Cells["slipnoDataGridViewTextBoxColumn"]?.Value;
+                if (slipVal != null && !string.IsNullOrWhiteSpace(slipVal.ToString()))
+                {
+                    string slipNo = slipVal.ToString().Trim();
+                    main mainForm = Application.OpenForms.OfType<main>().FirstOrDefault();
+                    if (mainForm != null)
+                    {
+                        mainForm.LoadSlipBySlipNo(slipNo, true);
+                        mainForm.BringToFront();
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Main form is not open.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
         }
 
         private void ExportToExcelOrCsv()

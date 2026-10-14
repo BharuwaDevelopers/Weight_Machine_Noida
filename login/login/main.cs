@@ -82,6 +82,9 @@ namespace login
             get_tyer();
             get_charges();
             User_priv();
+            RefreshVehicleAutoComplete();
+            this.Vehical_box.Leave += new System.EventHandler(this.Vehical_box_Leave);
+            date_box.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             new Thread(crr_weight).Start();
         }
 
@@ -96,405 +99,208 @@ namespace login
         }
 
         private void save_main_Click_old(object sender, EventArgs e)
-
         {
-
-            // Console.WriteLine("value of nullees@!@!@" + dt.Rows[0][0]);
-
-            //if (String.IsNullOrEmpty(weight_box.Text) && String.IsNullOrEmpty(tire_weight_box.Text))
-            //{
-            //    MessageBox.Show("Tare Weight Or Gross Weight Should Not Be Empty");
-            //}
-            if (String.IsNullOrEmpty(Vehical_box.Text))
-            {
-                MessageBox.Show("Please Enter Vehical No");
-            }
-
-            if (String.IsNullOrEmpty(slipno_box.Text))
-            {
-                Console.WriteLine("value of vechlbox%^&*" + Vehical_box.Text);
-                SqlConnection db_connect1 = new SqlConnection(db_Connection.connection_string());
-                SqlDataAdapter sda = new SqlDataAdapter("Select net_weight,slip_no from measure where vehical_no ='" + Vehical_box.Text.Trim() + "' and net_weight = '' or net_weight = 'NULL' ", db_connect1);
-                DataTable dt = new DataTable();
-                sda.Fill(dt);
-                if (dt.Rows.Count == 1)
-                {
-                    MessageBox.Show("Pending Slip against vehiclenom " + Vehical_box.Text + " slip no " + dt.Rows[0][1]);
-                }
-                else
-                {
-                    SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-                    db_connect.Open();
-                    string qry = null;
-                    if (String.IsNullOrEmpty(slipno_box.Text))
-                    {
-
-                        // slip no gen
-                        string mrg = " ";
-                        String active_m = LISTNER.active_mech.Trim();
-                        string dt_chk = get_slipseq().Substring(2, 6);
-                        Console.WriteLine("valueo f dtchk##" + dt_chk);
-                        string kk = get_slipseq().Substring(8);
-                        string gen_slipno = "";
-                        Console.WriteLine("KK VALUE@@@@" + kk);
-                        int slipseq = int.Parse(kk);
-                        slipseq++;
-                        var slipseqdate = DateTime.Now.ToString("yyMMdd");
-                        // compair db date and current date
-                        if (int.Parse(dt_chk) != int.Parse(slipseqdate))
-                        {
-                            slipseq = 1;
-                            kk = "0";
-                            mrg = "000" + slipseq.ToString();
-                            gen_slipno = active_m + slipseqdate + mrg;
-                        }
-                        else
-                        {
-
-                            if (int.Parse(kk) < 10)
-                            {
-                                mrg = "000" + slipseq.ToString();
-
-                                gen_slipno = active_m + slipseqdate + mrg;
-                            }
-                            if (int.Parse(kk) > 9 && int.Parse(kk) < 99)
-                            {
-                                mrg = "00" + slipseq.ToString();
-
-                                gen_slipno = active_m + slipseqdate + mrg;
-                            }
-                            if (int.Parse(kk) > 99 && int.Parse(kk) < 999)
-                            {
-                                mrg = "0" + slipseq.ToString();
-
-                                gen_slipno = active_m + slipseqdate + mrg;
-                            }
-                            if (int.Parse(kk) > 999 && int.Parse(kk) < 9999)
-                            {
-                                gen_slipno = active_m + slipseqdate + slipseq;
-
-                            }
-                        }
-                        //halt after 99999
-                        if (slipseq > 9999)
-                        {
-
-                            MessageBox.Show("Max Slip No is 9999");
-                            this.Close();
-
-                        }
-            ;
-
-
-
-
-
-
-                        MessageBox.Show(gen_slipno);
-
-                        //int? gross_weight = int.Parse(weight_box.Text.ToString());
-                        //int? tare_weight = int.Parse(tire_weight_box.Text.ToString());
-
-                        string get_session = Form1.User_sessson.ToString();
-
-                        try
-                        {
-
-
-                            //string slip_no = slipno_box.Text.ToString();
-                            //string weigh = weight_box.Text.ToString();
-                            int? net_weight = null;
-
-
-
-                            DateTime curr_date = DateTime.Now;
-                            string StringFormat = "yyy-MM-dd HH:MM:ss";
-
-                            string ss = curr_date.ToString(StringFormat);
-                            date_box.Text = ss;
-
-                            Console.WriteLine("Date*&*&**" + ss);
-
-                            slipno_box.Text = gen_slipno.ToString();
-                            qry = "insert into measure(slip_no, weight, tire_weight, net_weight, vehical_no, party, meterial, vehical_type, charges, date,remarks, user_name,token_no) values('" + gen_slipno + "','" + weight_box.Text + "', '" + tire_weight_box.Text + "', '" + net_weight + "',  '" + Vehical_box.Text + "', '" + Party_box.Text + "', '" + meterial_box.Text + "','" + vechaltype_drop.Text + "','" + charges_drop.Text + "','" + curr_date.ToString(StringFormat) + "', '" + remarks_box.Text + "','" + get_session + "','" + tokenNo_box.Text + "')";
-                            String slipchkqry = ("Select net_weight from measure where  ='" + Vehical_box.Text + "' and net_weight = '' or net_weight = 'NULL'; ");
-
-                            SqlCommand cmd = new SqlCommand(qry, db_connect);
-                            cmd.ExecuteNonQuery();
-
-
-
-                            // MessageBox.Show("data save");
-
-                            db_connect.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("exception" + ex);
-                        }
-                        finally
-                        {
-                            db_connect.Close();
-                        }
-
-                    }
-
-                }
-
-            }
-
-            else
-            {
-
-
-                //try
-                //{
-
-                //to update slip no 
-                DateTime curr_date = DateTime.Now;
-                string StringFormat = "yyy-MM-dd HH:MM:ss";
-
-                string ss = curr_date.ToString(StringFormat);
-                mod_date.Text = ss.ToString();
-                Console.WriteLine("net%%#%#%#" + ss);
-                mod_date.Text = ss.ToString();
-
-                int net_weight = int.Parse(weight_box.Text) - int.Parse(tire_weight_box.Text);
-
-                net_weight_box.Text = net_weight.ToString();
-
-                SqlConnection db_connect_1 = new SqlConnection(db_Connection.connection_string());
-
-
-                db_connect_1.Open();
-
-                SqlCommand SqlComm = new SqlCommand("UPDATE measure SET weight=@weight , tire_weight=@tire_weight, net_weight=@net_weight ,  party=@party , meterial=@meterial , vehical_type=@vehical_type , charges=@charges , date=@date , remarks=@remarks, mod_date=@mod_date , mod_by=@mod_by  where slip_no=@slip_no", db_connect_1);
-                Console.WriteLine("DB CONNECT " + db_connect_1);
-
-                SqlComm.Parameters.AddWithValue("@weight", weight_box.Text);
-                SqlComm.Parameters.AddWithValue("@tire_weight", tire_weight_box.Text);
-                SqlComm.Parameters.AddWithValue("@net_weight", net_weight.ToString());
-                // SqlComm.Parameters.AddWithValue("@vehical_no", Vehical_box.Text);
-                SqlComm.Parameters.AddWithValue("@party", Party_box.Text);
-                SqlComm.Parameters.AddWithValue("@meterial", meterial_box.Text);
-                SqlComm.Parameters.AddWithValue("@vehical_type", vechaltype_drop.Text);
-                SqlComm.Parameters.AddWithValue("@charges", charges_drop.Text);
-                SqlComm.Parameters.AddWithValue("@date", date_box.Text);
-
-                SqlComm.Parameters.AddWithValue("@remarks", remarks_box.Text);
-
-                SqlComm.Parameters.AddWithValue("@mod_date", ss.ToString());
-                SqlComm.Parameters.AddWithValue("@mod_by", Form1.User_sessson.ToString());
-                SqlComm.Parameters.AddWithValue("@slip_no", slipno_box.Text);
-
-                SqlComm.ExecuteNonQuery();
-                db_connect_1.Close();
-                MessageBox.Show("Slip no Updated");
-
-
-
-            }
+            save_main_Click(sender, e);
         }
 
-
         private void save_main_Click(object sender, EventArgs e)
-
         {
-
-            // Console.WriteLine("value of nullees@!@!@" + dt.Rows[0][0]);
-
-            //if (String.IsNullOrEmpty(weight_box.Text) && String.IsNullOrEmpty(tire_weight_box.Text))
-            //{
-            //    MessageBox.Show("Tare Weight Or Gross Weight Should Not Be Empty");
-            //}
-            if (String.IsNullOrEmpty(Vehical_box.Text))
+            string rawVeh = Vehical_box.Text != null ? Vehical_box.Text.Trim().ToUpper() : "";
+            if (string.IsNullOrEmpty(rawVeh))
             {
                 MessageBox.Show("Please Enter Vehical No");
+                Vehical_box.Focus();
+                return;
             }
 
-            if (String.IsNullOrEmpty(slipno_box.Text))
+            string cleanVeh = rawVeh.Replace("-", "").Replace(" ", "");
+            string currentSlipNo = slipno_box.Text != null ? slipno_box.Text.Trim() : "";
+
+            // If slipno_box is empty, this is a NEW slip (1st weighment)
+            if (string.IsNullOrEmpty(currentSlipNo))
             {
-                Console.WriteLine("value of vechlbox%^&*" + Vehical_box.Text);
-                SqlConnection db_connect1 = new SqlConnection(db_Connection.connection_string());
-                SqlDataAdapter sda = new SqlDataAdapter("Select net_weight,slip_no from measure where vehical_no ='" + Vehical_box.Text.Trim() + "' and net_weight = '' or net_weight = 'NULL' ", db_connect1);
-                DataTable dt = new DataTable();
-                sda.Fill(dt);
-                if (dt.Rows.Count == 1)
+
+                // Check if this vehicle already has a pending slip
+                try
                 {
-                    MessageBox.Show("Pending Slip against vehiclenom " + Vehical_box.Text + " slip no " + dt.Rows[0][1]);
-                }
-                else
-                {
-                    SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-                    db_connect.Open();
-                    string qry = null;
-                    if (String.IsNullOrEmpty(slipno_box.Text))
+                    using (SqlConnection db_connect1 = new SqlConnection(db_Connection.connection_string()))
                     {
-
-                        // slip no gen
-                        string mrg = " ";
-                        String active_m = LISTNER.active_mech.Trim();
-                        string dt_chk = get_slipseq().Substring(2, 6);
-                        Console.WriteLine("valueo f dtchk##" + dt_chk);
-                        string kk = get_slipseq().Substring(8);
-                        string gen_slipno = "";
-                        Console.WriteLine("KK VALUE@@@@" + kk);
-                        int slipseq = int.Parse(kk);
-                        slipseq++;
-                        var slipseqdate = DateTime.Now.ToString("yyMMdd");
-                        // compair db date and current date
-                        if (int.Parse(dt_chk) != int.Parse(slipseqdate))
+                        db_connect1.Open();
+                        string chkQry = @"SELECT TOP 1 slip_no, vehical_no FROM measure 
+                                         WHERE (vehical_no = @rawVeh OR REPLACE(REPLACE(vehical_no, '-', ''), ' ', '') = @cleanVeh)
+                                           AND (net_weight IS NULL OR LTRIM(RTRIM(net_weight)) = '' OR net_weight = 'NULL')
+                                         ORDER BY slip_no DESC";
+                        using (SqlCommand chkCmd = new SqlCommand(chkQry, db_connect1))
                         {
-                            slipseq = 1;
-                            kk = "0";
-                            mrg = "000" + slipseq.ToString();
-                            gen_slipno = active_m + slipseqdate + mrg;
-                        }
-                        else
-                        {
-
-                            if (slipseq < 10)
+                            chkCmd.Parameters.AddWithValue("@rawVeh", rawVeh);
+                            chkCmd.Parameters.AddWithValue("@cleanVeh", cleanVeh);
+                            using (SqlDataAdapter sda = new SqlDataAdapter(chkCmd))
                             {
-                                mrg = "000" + slipseq.ToString();
+                                DataTable dt = new DataTable();
+                                sda.Fill(dt);
+                                if (dt.Rows.Count >= 1)
+                                {
+                                    string pendingSlipNo = dt.Rows[0]["slip_no"].ToString().Trim();
+                                    DialogResult dr = MessageBox.Show(
+                                        "Pending Slip (" + pendingSlipNo + ") already exists for Vehicle " + rawVeh + ".\n\nDo you want to load this pending slip now?",
+                                        "Pending Slip Found",
+                                        MessageBoxButtons.YesNo,
+                                        MessageBoxIcon.Question);
 
-                                gen_slipno = active_m + slipseqdate + mrg;
-                            }
-                            if (slipseq > 9 && slipseq < 100)
-                            {
-                                mrg = "00" + slipseq.ToString();
-
-                                gen_slipno = active_m + slipseqdate + mrg;
-                            }
-                            if (slipseq > 99 && slipseq < 1000)
-                            {
-                                mrg = "0" + slipseq.ToString();
-
-                                gen_slipno = active_m + slipseqdate + mrg;
-                            }
-                            if (slipseq > 999 && slipseq < 9999)
-                            {
-                                gen_slipno = active_m + slipseqdate + slipseq;
-
+                                    if (dr == DialogResult.Yes)
+                                    {
+                                        LoadSlipBySlipNo(pendingSlipNo, false);
+                                    }
+                                    return;
+                                }
                             }
                         }
-                        //halt after 99999
-                        if (slipseq > 9999)
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error checking pending slips: " + ex.Message);
+                }
+
+                // Generate new slip number
+                string active_m = (LISTNER.active_mech ?? "M").Trim();
+                if (string.IsNullOrEmpty(active_m)) active_m = "M";
+
+                string slipseqdate = DateTime.Now.ToString("yyMMdd");
+                int slipseq = 1;
+
+                string lastSlip = get_slipseq();
+                if (!string.IsNullOrEmpty(lastSlip) && lastSlip.Length >= active_m.Length + 10)
+                {
+                    int prefixLen = active_m.Length;
+                    if (lastSlip.StartsWith(active_m, StringComparison.OrdinalIgnoreCase))
+                    {
+                        string lastDate = lastSlip.Substring(prefixLen, 6);
+                        string lastSeqStr = lastSlip.Substring(prefixLen + 6);
+                        int parsedSeq;
+                        if (int.TryParse(lastSeqStr, out parsedSeq))
                         {
-
-                            MessageBox.Show("Max Slip No is 9999");
-                            this.Close();
-
+                            if (lastDate == slipseqdate)
+                            {
+                                slipseq = parsedSeq + 1;
+                            }
+                            else
+                            {
+                                slipseq = 1;
+                            }
                         }
-            ;
+                    }
+                }
 
+                if (slipseq > 9999)
+                {
+                    MessageBox.Show("Maximum Slip sequence reached for today.", "Limit Reached", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
+                string gen_slipno = string.Format("{0}{1}{2:D4}", active_m, slipseqdate, slipseq);
 
+                try
+                {
+                    DateTime curr_date = DateTime.Now;
+                    string StringFormat = "yyyy-MM-dd HH:mm:ss";
+                    string dateStr = curr_date.ToString(StringFormat);
+                    date_box.Text = dateStr;
 
+                    string get_session = Form1.User_sessson != null ? Form1.User_sessson.ToString() : "Admin";
 
-
-                        MessageBox.Show(gen_slipno);
-
-                        //int? gross_weight = int.Parse(weight_box.Text.ToString());
-                        //int? tare_weight = int.Parse(tire_weight_box.Text.ToString());
-
-                        string get_session = Form1.User_sessson.ToString();
-
-                        try
+                    using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                    {
+                        db_connect.Open();
+                        string insertQry = @"INSERT INTO measure(slip_no, weight, tire_weight, net_weight, vehical_no, party, meterial, vehical_type, charges, date, remarks, user_name, token_no) 
+                                             VALUES(@slip_no, @weight, @tire_weight, NULL, @vehical_no, @party, @meterial, @vehical_type, @charges, @date, @remarks, @user_name, @token_no)";
+                        using (SqlCommand cmd = new SqlCommand(insertQry, db_connect))
                         {
+                            cmd.Parameters.AddWithValue("@slip_no", gen_slipno);
+                            cmd.Parameters.AddWithValue("@weight", weight_box.Text.Trim());
+                            cmd.Parameters.AddWithValue("@tire_weight", tire_weight_box.Text.Trim());
+                            cmd.Parameters.AddWithValue("@vehical_no", rawVeh);
+                            cmd.Parameters.AddWithValue("@party", Party_box.Text.Trim());
+                            cmd.Parameters.AddWithValue("@meterial", meterial_box.Text.Trim());
+                            cmd.Parameters.AddWithValue("@vehical_type", vechaltype_drop.Text.Trim());
+                            cmd.Parameters.AddWithValue("@charges", charges_drop.Text.Trim());
+                            cmd.Parameters.AddWithValue("@date", dateStr);
+                            cmd.Parameters.AddWithValue("@remarks", remarks_box.Text.Trim());
+                            cmd.Parameters.AddWithValue("@user_name", get_session);
+                            cmd.Parameters.AddWithValue("@token_no", tokenNo_box.Text.Trim());
 
-
-                            //string slip_no = slipno_box.Text.ToString();
-                            //string weigh = weight_box.Text.ToString();
-                            int? net_weight = null;
-
-
-
-                            DateTime curr_date = DateTime.Now;
-                            string StringFormat = "yyy-MM-dd HH:MM:ss";
-
-                            string ss = curr_date.ToString(StringFormat);
-                            date_box.Text = ss;
-
-                            Console.WriteLine("Date*&*&**" + ss);
-
-                            slipno_box.Text = gen_slipno.ToString();
-                            qry = "insert into measure(slip_no, weight, tire_weight, net_weight, vehical_no, party, meterial, vehical_type, charges, date,remarks, user_name,token_no) values('" + gen_slipno + "','" + weight_box.Text + "', '" + tire_weight_box.Text + "', '" + net_weight + "',  '" + Vehical_box.Text + "', '" + Party_box.Text + "', '" + meterial_box.Text + "','" + vechaltype_drop.Text + "','" + charges_drop.Text + "','" + curr_date.ToString(StringFormat) + "', '" + remarks_box.Text + "','" + get_session + "','" + tokenNo_box.Text + "')";
-                            String slipchkqry = ("Select net_weight from measure where  ='" + Vehical_box.Text + "' and net_weight = '' or net_weight = 'NULL'; ");
-
-                            SqlCommand cmd = new SqlCommand(qry, db_connect);
                             cmd.ExecuteNonQuery();
-
-
-
-                            // MessageBox.Show("data save");
-
-                            db_connect.Close();
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("exception" + ex);
-                        }
-                        finally
-                        {
-                            db_connect.Close();
-                        }
-
                     }
 
+                    slipno_box.Text = gen_slipno;
+                    RefreshVehicleAutoComplete();
+                    MessageBox.Show("Slip No: " + gen_slipno + " Saved Successfully", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error saving slip: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-
             else
             {
+                // 2nd weighment: Update existing slip
+                int grossVal = 0;
+                int tareVal = 0;
+                int.TryParse(weight_box.Text.Trim(), out grossVal);
+                int.TryParse(tire_weight_box.Text.Trim(), out tareVal);
 
-
-                //try
-                //{
-
-                //to update slip no 
-                DateTime curr_date = DateTime.Now;
-                string StringFormat = "yyy-MM-dd HH:MM:ss";
-
-                string ss = curr_date.ToString(StringFormat);
-                mod_date.Text = ss.ToString();
-                Console.WriteLine("net%%#%#%#" + ss);
-                mod_date.Text = ss.ToString();
-
-                int net_weight = int.Parse(weight_box.Text) - int.Parse(tire_weight_box.Text);
-
+                int net_weight = grossVal - tareVal;
+                if (net_weight < 0) net_weight = 0;
                 net_weight_box.Text = net_weight.ToString();
 
-                SqlConnection db_connect_1 = new SqlConnection(db_Connection.connection_string());
+                DateTime curr_date = DateTime.Now;
+                string StringFormat = "yyyy-MM-dd HH:mm:ss";
+                string ss = curr_date.ToString(StringFormat);
+                mod_date.Text = ss;
 
+                try
+                {
+                    using (SqlConnection db_connect_1 = new SqlConnection(db_Connection.connection_string()))
+                    {
+                        db_connect_1.Open();
+                        string updateQry = @"UPDATE measure SET 
+                                                weight = @weight, 
+                                                tire_weight = @tire_weight, 
+                                                net_weight = @net_weight, 
+                                                party = @party, 
+                                                meterial = @meterial, 
+                                                vehical_type = @vehical_type, 
+                                                charges = @charges, 
+                                                remarks = @remarks, 
+                                                mod_date = @mod_date, 
+                                                mod_by = @mod_by 
+                                             WHERE slip_no = @slip_no";
+                        using (SqlCommand SqlComm = new SqlCommand(updateQry, db_connect_1))
+                        {
+                            SqlComm.Parameters.AddWithValue("@weight", grossVal.ToString());
+                            SqlComm.Parameters.AddWithValue("@tire_weight", tareVal.ToString());
+                            SqlComm.Parameters.AddWithValue("@net_weight", net_weight.ToString());
+                            SqlComm.Parameters.AddWithValue("@party", Party_box.Text.Trim());
+                            SqlComm.Parameters.AddWithValue("@meterial", meterial_box.Text.Trim());
+                            SqlComm.Parameters.AddWithValue("@vehical_type", vechaltype_drop.Text.Trim());
+                            SqlComm.Parameters.AddWithValue("@charges", charges_drop.Text.Trim());
+                            SqlComm.Parameters.AddWithValue("@remarks", remarks_box.Text.Trim());
+                            SqlComm.Parameters.AddWithValue("@mod_date", ss);
+                            SqlComm.Parameters.AddWithValue("@mod_by", Form1.User_sessson != null ? Form1.User_sessson.ToString() : "Admin");
+                            SqlComm.Parameters.AddWithValue("@slip_no", currentSlipNo);
 
-                db_connect_1.Open();
+                            SqlComm.ExecuteNonQuery();
+                        }
+                    }
 
-                SqlCommand SqlComm = new SqlCommand("UPDATE measure SET weight=@weight , tire_weight=@tire_weight, net_weight=@net_weight ,  party=@party , meterial=@meterial , vehical_type=@vehical_type , charges=@charges , date=@date , remarks=@remarks, mod_date=@mod_date , mod_by=@mod_by  where slip_no=@slip_no", db_connect_1);
-                Console.WriteLine("DB CONNECT " + db_connect_1);
-
-                SqlComm.Parameters.AddWithValue("@weight", weight_box.Text);
-                SqlComm.Parameters.AddWithValue("@tire_weight", tire_weight_box.Text);
-                SqlComm.Parameters.AddWithValue("@net_weight", net_weight.ToString());
-                // SqlComm.Parameters.AddWithValue("@vehical_no", Vehical_box.Text);
-                SqlComm.Parameters.AddWithValue("@party", Party_box.Text);
-                SqlComm.Parameters.AddWithValue("@meterial", meterial_box.Text);
-                SqlComm.Parameters.AddWithValue("@vehical_type", vechaltype_drop.Text);
-                SqlComm.Parameters.AddWithValue("@charges", charges_drop.Text);
-                SqlComm.Parameters.AddWithValue("@date", date_box.Text);
-
-                SqlComm.Parameters.AddWithValue("@remarks", remarks_box.Text);
-
-                SqlComm.Parameters.AddWithValue("@mod_date", ss.ToString());
-                SqlComm.Parameters.AddWithValue("@mod_by", Form1.User_sessson.ToString());
-                SqlComm.Parameters.AddWithValue("@slip_no", slipno_box.Text);
-
-                SqlComm.ExecuteNonQuery();
-                db_connect_1.Close();
-                MessageBox.Show("Slip no Updated");
-
-
-
+                    RefreshVehicleAutoComplete();
+                    MessageBox.Show("Slip No: " + currentSlipNo + " Updated Successfully", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error updating slip: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -527,6 +333,17 @@ namespace login
             if (weight_chk2 == "True" || radioButton2.Checked)
             {
                 weight_box.Text = parsedVal.ToString();
+            }
+
+            // Set current date time
+            string nowStr = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            if (string.IsNullOrEmpty(slipno_box.Text))
+            {
+                date_box.Text = nowStr;
+            }
+            else
+            {
+                mod_date.Text = nowStr;
             }
 
             CalculateNetWeight();
@@ -592,74 +409,16 @@ namespace login
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
-                string searchSlip = slipno_box.Text.Trim();
-                if (string.IsNullOrEmpty(searchSlip))
-                {
-                    MessageBox.Show("Please enter a Slip No to search.", "Search Slip", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                try
-                {
-                    using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
-                    {
-                        db_connect.Open();
-                        SqlDataAdapter sda = new SqlDataAdapter("SELECT * FROM measure WHERE slip_no = @slip_no", db_connect);
-                        sda.SelectCommand.Parameters.AddWithValue("@slip_no", searchSlip);
-                        DataTable dt = new DataTable();
-                        sda.Fill(dt);
-
-                        if (dt.Rows.Count > 0)
-                        {
-                            DataRow row = dt.Rows[0];
-                            slipno_box.Text = row["slip_no"].ToString().Trim();
-                            weight_box.Text = row["weight"] != DBNull.Value ? row["weight"].ToString().Trim() : "";
-                            tire_weight_box.Text = row["tire_weight"] != DBNull.Value ? row["tire_weight"].ToString().Trim() : "";
-                            net_weight_box.Text = row["net_weight"] != DBNull.Value ? row["net_weight"].ToString().Trim() : "";
-                            Vehical_box.Text = row["vehical_no"] != DBNull.Value ? row["vehical_no"].ToString().Trim() : "";
-                            Party_box.Text = row["party"] != DBNull.Value ? row["party"].ToString().Trim() : "";
-                            meterial_box.Text = row["meterial"] != DBNull.Value ? row["meterial"].ToString().Trim() : "";
-                            vechaltype_drop.Text = row["vehical_type"] != DBNull.Value ? row["vehical_type"].ToString().Trim() : "";
-                            charges_drop.Text = row["charges"] != DBNull.Value ? row["charges"].ToString().Trim() : "";
-                            date_box.Text = row["date"] != DBNull.Value ? row["date"].ToString().Trim() : "";
-                            remarks_box.Text = row["remarks"] != DBNull.Value ? row["remarks"].ToString().Trim() : "";
-                            mod_date.Text = row["mod_date"] != DBNull.Value ? row["mod_date"].ToString().Trim() : "";
-                            tokenNo_box.Text = row["token_no"] != DBNull.Value ? row["token_no"].ToString().Trim() : "";
-
-                            // Calculate Net Weight
-                            CalculateNetWeight();
-
-                            // Automatically suggest the next weighment mode for 2nd weight:
-                            if (!string.IsNullOrEmpty(tire_weight_box.Text) && string.IsNullOrEmpty(weight_box.Text))
-                            {
-                                radioButton2.Checked = true; // Set to Gross Weight
-                            }
-                            else if (!string.IsNullOrEmpty(weight_box.Text) && string.IsNullOrEmpty(tire_weight_box.Text))
-                            {
-                                radioButton1.Checked = true; // Set to Tare Weight
-                            }
-
-                            MessageBox.Show("Record loaded successfully for Slip No: " + searchSlip, "Slip Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            MessageBox.Show("No record found for Slip No: " + searchSlip, "Record Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error searching Slip No: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                LoadSlipBySlipNo(slipno_box.Text, true);
             }
         }
         private int calculate_netweight()
         {
-            int weight = int.Parse(weight_box.Text);
-            int tire_weight = int.Parse(tire_weight_box.Text);
-            int net_weight = weight - tire_weight;
-            return net_weight;
-
+            int weight = 0;
+            int tire_weight = 0;
+            int.TryParse(weight_box.Text.Trim(), out weight);
+            int.TryParse(tire_weight_box.Text.Trim(), out tire_weight);
+            return weight - tire_weight;
         }
 
         private void tire_weight_box_TextChanged(object sender, EventArgs e)
@@ -668,34 +427,32 @@ namespace login
         }
         public string get_slipseq()
         {
-
-            SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-            db_connect.Open();
-            String mk = LISTNER.active_mech.ToString().Replace(" ", ""); ;
-            Console.WriteLine("value of mk33" + mk);
-            SqlDataAdapter sda = new SqlDataAdapter("Select max(slip_no) from measure where slip_no like '" + mk + "%' ", db_connect);
-
-            DataTable dt = new DataTable();
-
-            sda.Fill(dt);
-            Console.WriteLine("value of dt &&##&@&#@&" + dt.Rows[0][0]);
-            if (dt.Rows[0][0].ToString() == "")
+            try
             {
-                String active_m = LISTNER.active_mech.Replace(" ", "");
-                var slipseqdate = DateTime.Now.ToString("yyMMdd");
-
-                String gen_slipno = "0000";
-                gen_slipno = active_m + slipseqdate + gen_slipno;
-                Console.WriteLine("value of sq!!!!" + gen_slipno);
-                return gen_slipno;
-
+                using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                {
+                    db_connect.Open();
+                    string mk = (LISTNER.active_mech ?? "M").ToString().Trim();
+                    using (SqlDataAdapter sda = new SqlDataAdapter("SELECT MAX(slip_no) FROM measure WHERE slip_no LIKE @mk", db_connect))
+                    {
+                        sda.SelectCommand.Parameters.AddWithValue("@mk", mk + "%");
+                        DataTable dt = new DataTable();
+                        sda.Fill(dt);
+                        if (dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value && !string.IsNullOrEmpty(dt.Rows[0][0].ToString()))
+                        {
+                            return dt.Rows[0][0].ToString();
+                        }
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                db_connect.Close();
-                return dt.Rows[0][0].ToString();
-
+                Console.WriteLine("get_slipseq error: " + ex.Message);
             }
+
+            string active_m = (LISTNER.active_mech ?? "M").ToString().Trim();
+            string slipseqdate = DateTime.Now.ToString("yyMMdd");
+            return active_m + slipseqdate + "0000";
         }
 
         private void addDeviceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -771,7 +528,7 @@ namespace login
         private void pendingSlipsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Reports.Pending_slips pending_Slips = new Reports.Pending_slips();
-            pending_Slips.Show();
+            pending_Slips.Show(this);
         }
 
         private void Vehical_box_TextChanged(object sender, EventArgs e)
@@ -781,16 +538,16 @@ namespace login
 
         private void Vehical_box_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //var regex = new Regex(@"[^a-zA-Z0-9\s]");
-            //if (regex.IsMatch(e.KeyChar.ToString()))
-            //{
-            //    e.Handled = true;
-            //}
+            // Allow control keys (backspace, enter, tab)
+            if (char.IsControl(e.KeyChar))
+                return;
 
-            e.Handled = Char.IsPunctuation(e.KeyChar) ||
-                       Char.IsSeparator(e.KeyChar) ||
-                       Char.IsSymbol(e.KeyChar);
+            // Allow letters, digits, hyphen (-), and space ( )
+            if (char.IsLetterOrDigit(e.KeyChar) || e.KeyChar == '-' || e.KeyChar == ' ')
+                return;
 
+            // Block other symbols
+            e.Handled = true;
         }
         public void User_priv()
         {
@@ -857,48 +614,208 @@ namespace login
         {
             if (e.KeyCode == Keys.Enter)
             {
-                SqlConnection db_connect = new SqlConnection(db_Connection.connection_string());
-                SqlDataAdapter sda = new SqlDataAdapter("Select * from measure where vehical_no='" + Vehical_box.Text + "' and (net_weight = '' or net_weight = 'NULL' ) ", db_connect);
-                DataTable dt = new DataTable();
-                sda.Fill(dt);
+                e.SuppressKeyPress = true;
+                LoadPendingSlipForVehicle(Vehical_box.Text, true);
+            }
+        }
 
-                try
+        private void Vehical_box_Leave(object sender, EventArgs e)
+        {
+            // If slipno_box is empty and user entered a vehicle no, auto-load any pending slip quietly
+            if (string.IsNullOrEmpty(slipno_box.Text.Trim()) && !string.IsNullOrEmpty(Vehical_box.Text.Trim()))
+            {
+                LoadPendingSlipForVehicle(Vehical_box.Text, false);
+            }
+        }
+
+        public void PopulateSlipData(DataRow row)
+        {
+            if (row == null) return;
+
+            slipno_box.Text = row["slip_no"] != DBNull.Value ? row["slip_no"].ToString().Trim() : "";
+
+            string wtVal = row["weight"] != DBNull.Value ? row["weight"].ToString().Trim() : "";
+            string tareVal = row["tire_weight"] != DBNull.Value ? row["tire_weight"].ToString().Trim() : "";
+
+            weight_box.Text = wtVal;
+            tire_weight_box.Text = tareVal;
+            net_weight_box.Text = row["net_weight"] != DBNull.Value ? row["net_weight"].ToString().Trim() : "";
+
+            if (row["vehical_no"] != DBNull.Value && !string.IsNullOrEmpty(row["vehical_no"].ToString()))
+            {
+                Vehical_box.Text = row["vehical_no"].ToString().Trim();
+            }
+
+            Party_box.Text = row["party"] != DBNull.Value ? row["party"].ToString().Trim() : "";
+            meterial_box.Text = row["meterial"] != DBNull.Value ? row["meterial"].ToString().Trim() : "";
+            vechaltype_drop.Text = row["vehical_type"] != DBNull.Value ? row["vehical_type"].ToString().Trim() : "";
+            charges_drop.Text = row["charges"] != DBNull.Value ? row["charges"].ToString().Trim() : "";
+            string dVal = row["date"] != DBNull.Value ? row["date"].ToString().Trim() : "";
+            date_box.Text = !string.IsNullOrEmpty(dVal) ? dVal : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            remarks_box.Text = row["remarks"] != DBNull.Value ? row["remarks"].ToString().Trim() : "";
+            string modVal = row["mod_date"] != DBNull.Value ? row["mod_date"].ToString().Trim() : "";
+            mod_date.Text = modVal;
+            tokenNo_box.Text = row["token_no"] != DBNull.Value ? row["token_no"].ToString().Trim() : "";
+
+            // Automatically suggest the next weighment mode for 2nd weight:
+            if (!string.IsNullOrEmpty(tareVal) && string.IsNullOrEmpty(wtVal))
+            {
+                radioButton2.Checked = true; // Tare already captured, now capture Gross
+                weight_chk2 = "True";
+            }
+            else if (!string.IsNullOrEmpty(wtVal) && string.IsNullOrEmpty(tareVal))
+            {
+                radioButton1.Checked = true; // Gross already captured, now capture Tare
+                weight_chk2 = "False";
+            }
+
+            CalculateNetWeight();
+        }
+
+        public bool LoadSlipBySlipNo(string searchSlip, bool showMessages = true)
+        {
+            searchSlip = searchSlip != null ? searchSlip.Trim() : "";
+            if (string.IsNullOrEmpty(searchSlip))
+            {
+                if (showMessages)
+                    MessageBox.Show("Please enter a Slip No to search.", "Search Slip", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
+
+            try
+            {
+                using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
                 {
-                    if (dt.Rows.Count > 0)
+                    db_connect.Open();
+                    using (SqlCommand cmd = new SqlCommand("SELECT TOP 1 * FROM measure WHERE slip_no = @slip_no", db_connect))
                     {
+                        cmd.Parameters.AddWithValue("@slip_no", searchSlip);
+                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
 
-                        slipno_box.Text = dt.Rows[0][0].ToString().Trim();
-                        weight_box.Text = dt.Rows[0][1].ToString().Trim();
-                        tire_weight_box.Text = dt.Rows[0][2].ToString().Trim();
-                        net_weight_box.Text = dt.Rows[0][3].ToString().Trim();
-                        Party_box.Text = dt.Rows[0][5].ToString().Trim();
-
-                        meterial_box.Text = dt.Rows[0][6].ToString().Trim();
-                        vechaltype_drop.Text = dt.Rows[0][7].ToString().Trim();
-                        charges_drop.Text = dt.Rows[0][8].ToString().Trim();
-                        date_box.Text = dt.Rows[0][9].ToString().Trim();
-                        remarks_box.Text = dt.Rows[0][10].ToString().Trim();
-                        mod_date.Text = dt.Rows[0][13].ToString().Trim();
-                        Console.WriteLine("value of challan@@#@" + dt.Rows[0][13].ToString().Trim());
-                        tokenNo_box.Text = dt.Rows[0][14].ToString().Trim();
-
+                            if (dt.Rows.Count > 0)
+                            {
+                                PopulateSlipData(dt.Rows[0]);
+                                if (showMessages)
+                                    MessageBox.Show("Record loaded successfully for Slip No: " + searchSlip, "Slip Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                return true;
+                            }
+                            else
+                            {
+                                if (showMessages)
+                                    MessageBox.Show("No record found for Slip No: " + searchSlip, "Record Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return false;
+                            }
+                        }
                     }
-
-                    else
-                    {
-                        MessageBox.Show("Record not Found");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("value enterd was not currect " + ex);
-
-                }
-                finally
-                {
-                    db_connect.Close();
                 }
             }
+            catch (Exception ex)
+            {
+                if (showMessages)
+                    MessageBox.Show("Error searching Slip No: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        public bool LoadPendingSlipForVehicle(string vehicleNo, bool showMessages = false)
+        {
+            string rawVeh = vehicleNo != null ? vehicleNo.Trim().ToUpper() : "";
+            if (string.IsNullOrEmpty(rawVeh))
+                return false;
+
+            string cleanVeh = rawVeh.Replace("-", "").Replace(" ", "");
+
+            try
+            {
+                using (SqlConnection db_connect = new SqlConnection(db_Connection.connection_string()))
+                {
+                    db_connect.Open();
+                    string qry = @"SELECT TOP 1 * FROM measure 
+                                   WHERE (vehical_no = @rawVeh 
+                                          OR REPLACE(REPLACE(vehical_no, '-', ''), ' ', '') = @cleanVeh)
+                                     AND (net_weight IS NULL OR LTRIM(RTRIM(net_weight)) = '' OR net_weight = 'NULL')
+                                   ORDER BY slip_no DESC";
+                    using (SqlCommand cmd = new SqlCommand(qry, db_connect))
+                    {
+                        cmd.Parameters.AddWithValue("@rawVeh", rawVeh);
+                        cmd.Parameters.AddWithValue("@cleanVeh", cleanVeh);
+                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
+
+                            if (dt.Rows.Count > 0)
+                            {
+                                PopulateSlipData(dt.Rows[0]);
+                                if (showMessages)
+                                {
+                                    MessageBox.Show("Pending Slip (" + slipno_box.Text + ") loaded for Vehicle: " + rawVeh, 
+                                                    "Pending Slip Loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                return true;
+                            }
+                            else
+                            {
+                                if (showMessages)
+                                {
+                                    MessageBox.Show("No pending slip found for Vehicle: " + rawVeh, 
+                                                    "Record Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (showMessages)
+                    MessageBox.Show("Error searching Vehicle No: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        public void RefreshVehicleAutoComplete()
+        {
+            try
+            {
+                AutoCompleteStringCollection ac = new AutoCompleteStringCollection();
+                using (SqlConnection con = new SqlConnection(db_Connection.connection_string()))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT vehical_no FROM measure WHERE (net_weight IS NULL OR LTRIM(RTRIM(net_weight)) = '' OR net_weight = 'NULL') AND vehical_no IS NOT NULL AND LTRIM(RTRIM(vehical_no)) <> ''", con))
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            string v = dr[0] != null ? dr[0].ToString().Trim() : "";
+                            if (!string.IsNullOrEmpty(v))
+                            {
+                                ac.Add(v);
+                            }
+                        }
+                    }
+                }
+                if (Vehical_box.InvokeRequired)
+                {
+                    Vehical_box.BeginInvoke((MethodInvoker)delegate
+                    {
+                        Vehical_box.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                        Vehical_box.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                        Vehical_box.AutoCompleteCustomSource = ac;
+                    });
+                }
+                else
+                {
+                    Vehical_box.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                    Vehical_box.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                    Vehical_box.AutoCompleteCustomSource = ac;
+                }
+            }
+            catch { }
         }
 
         private void ref_slipNo_box_KeyDown(object sender, KeyEventArgs e)
@@ -1187,7 +1104,21 @@ namespace login
             g.DrawString(main.prn_product ?? "", valueFont, Brushes.Black, startX + 340, 83);
 
             g.DrawString("Final Date:", labelFont, Brushes.Black, startX + 505, 83);
-            g.DrawString(mdate ?? "", valueFont, Brushes.Black, startX + 590, 83);
+
+            string gStr = main.prn_g_weight != null ? main.prn_g_weight.Trim() : "";
+            string tStr = main.prn_t_weight != null ? main.prn_t_weight.Trim() : "";
+
+            bool isGrossNull = string.IsNullOrEmpty(gStr) || gStr.Equals("NULL", StringComparison.OrdinalIgnoreCase);
+            bool isTareNull = string.IsNullOrEmpty(tStr) || tStr.Equals("NULL", StringComparison.OrdinalIgnoreCase);
+
+            // In case of zero, print final date (only if any weight value is null/empty, do not print)
+            bool shouldPrintFinalDate = !isGrossNull && !isTareNull;
+
+            if (shouldPrintFinalDate)
+            {
+                string finalDateToPrint = !string.IsNullOrWhiteSpace(mdate) ? mdate : (!string.IsNullOrWhiteSpace(cr_date) ? cr_date : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                g.DrawString(finalDateToPrint, valueFont, Brushes.Black, startX + 590, 83);
+            }
 
             // Row 3
             g.DrawString("Challan No:", labelFont, Brushes.Black, startX + 10, 106);
@@ -1251,7 +1182,7 @@ namespace login
             tire_weight_box.Clear();
             Vehical_box.Clear();
             charges_drop.Text = "";
-            date_box.Clear();
+            date_box.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             mod_date.Clear();
             vechaltype_drop.Text = "";
             remarks_box.Clear();
@@ -1302,7 +1233,14 @@ namespace login
                     _clockTimer.Interval = 1000;
                     _clockTimer.Tick += (s, ev) =>
                     {
+                        string currentNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                         lblLiveClock.Text = DateTime.Now.ToString("dd-MMM-yyyy  HH:mm:ss");
+
+                        // If brand new slip (1st weight in progress), show current date time in 1st Wt Date
+                        if (string.IsNullOrEmpty(slipno_box.Text))
+                        {
+                            date_box.Text = currentNow;
+                        }
                     };
                     _clockTimer.Start();
                 }
@@ -1318,17 +1256,23 @@ namespace login
         {
             try
             {
-                int gross = 0;
-                int tare = 0;
-                int.TryParse(weight_box.Text.Trim(), out gross);
-                int.TryParse(tire_weight_box.Text.Trim(), out tare);
-                if (gross > 0 && tare > 0)
+                string gText = weight_box.Text != null ? weight_box.Text.Trim() : "";
+                string tText = tire_weight_box.Text != null ? tire_weight_box.Text.Trim() : "";
+
+                if (!string.IsNullOrEmpty(gText) && !string.IsNullOrEmpty(tText))
                 {
-                    net_weight_box.Text = (gross - tare).ToString();
+                    int gross = 0;
+                    int tare = 0;
+                    int.TryParse(gText, out gross);
+                    int.TryParse(tText, out tare);
+
+                    int net = gross - tare;
+                    if (net < 0) net = 0;
+                    net_weight_box.Text = net.ToString();
                 }
-                else if (gross > 0 && tare == 0)
+                else
                 {
-                    net_weight_box.Text = gross.ToString();
+                    net_weight_box.Text = "";
                 }
             }
             catch { }

@@ -19,6 +19,7 @@ namespace login.Reports
         private Label lblSummaryBadge;
         private Button btnExportExcel;
         private Button btnRefreshData;
+        private Button btnLoadInMain;
 
         private Panel pnlFilterBar;
         private TextBox txtSearch;
@@ -48,7 +49,19 @@ namespace login.Reports
         {
             try
             {
-                this.measureTableAdapter1.FillBy1(this.weight_bridgeDataSet.measure);
+                using (System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(db_Connection.connection_string()))
+                {
+                    con.Open();
+                    string query = @"SELECT charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
+                                     FROM measure 
+                                     WHERE (net_weight IS NULL) OR (LTRIM(RTRIM(net_weight)) = '') OR (net_weight = 'NULL')
+                                     ORDER BY slip_no DESC";
+                    using (System.Data.SqlClient.SqlDataAdapter sda = new System.Data.SqlClient.SqlDataAdapter(query, con))
+                    {
+                        this.weight_bridgeDataSet.measure.Clear();
+                        sda.Fill(this.weight_bridgeDataSet.measure);
+                    }
+                }
                 UpdateSummaryMetrics();
             }
             catch (System.Exception ex)
@@ -128,8 +141,24 @@ namespace login.Reports
             btnRefreshData.FlatAppearance.BorderSize = 0;
             btnRefreshData.Click += (s, ev) => { LoadData(); ResetFilters(); };
 
+            btnLoadInMain = new Button
+            {
+                Text = "✅ Load in Form",
+                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(16, 185, 129), // emerald-500
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(130, 34),
+                Location = new Point(this.ClientSize.Width - 390, 13),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Cursor = Cursors.Hand
+            };
+            btnLoadInMain.FlatAppearance.BorderSize = 0;
+            btnLoadInMain.Click += (s, ev) => LoadSelectedSlipIntoMain();
+
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSummaryBadge);
+            pnlHeader.Controls.Add(btnLoadInMain);
             pnlHeader.Controls.Add(btnExportExcel);
             pnlHeader.Controls.Add(btnRefreshData);
 
@@ -258,7 +287,13 @@ namespace login.Reports
             MapColumnHeader("modbyDataGridViewTextBoxColumn", "Mod By");
             MapColumnHeader("tokennoDataGridViewTextBoxColumn", "Challan / Token");
 
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dataGridView1.RowHeadersVisible = false;
+            foreach (DataGridViewColumn col in dataGridView1.Columns)
+            {
+                col.MinimumWidth = 80;
+            }
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            dataGridView1.CellDoubleClick += (s, ev) => LoadSelectedSlipIntoMain();
         }
 
         private void MapColumnHeader(string colName, string headerText)
@@ -325,7 +360,30 @@ namespace login.Reports
         {
             int count = measureBindingSource1.Count;
             lblSummaryBadge.Text = $"Total Pending Slips: {count}";
-            lblStatusText.Text = $"Filtered Results: {count} pending weighment records loaded.";
+            lblStatusText.Text = $"Filtered Results: {count} pending records. 💡 Double-click any slip or click 'Load in Form' to populate into main weighing window.";
+        }
+
+        private void LoadSelectedSlipIntoMain()
+        {
+            if (dataGridView1.CurrentRow != null && !dataGridView1.CurrentRow.IsNewRow)
+            {
+                object slipVal = dataGridView1.CurrentRow.Cells["slipnoDataGridViewTextBoxColumn"]?.Value;
+                if (slipVal != null && !string.IsNullOrWhiteSpace(slipVal.ToString()))
+                {
+                    string slipNo = slipVal.ToString().Trim();
+                    main mainForm = Application.OpenForms.OfType<main>().FirstOrDefault();
+                    if (mainForm != null)
+                    {
+                        mainForm.LoadSlipBySlipNo(slipNo, true);
+                        mainForm.BringToFront();
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Main form is not open.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
         }
 
         private void ExportToExcelOrCsv()

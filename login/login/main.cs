@@ -919,16 +919,17 @@ namespace login
             try
             {
                 AutoCompleteStringCollection ac = new AutoCompleteStringCollection();
+                HashSet<string> unique = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 using (SqlConnection con = new SqlConnection(db_Connection.connection_string()))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT vehical_no FROM measure WHERE (net_weight IS NULL OR LTRIM(RTRIM(net_weight)) = '' OR net_weight = 'NULL') AND vehical_no IS NOT NULL AND LTRIM(RTRIM(vehical_no)) <> ''", con))
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT LTRIM(RTRIM(vehical_no)) FROM measure WHERE (net_weight IS NULL OR LTRIM(RTRIM(net_weight)) = '' OR net_weight = 'NULL') AND vehical_no IS NOT NULL AND LTRIM(RTRIM(vehical_no)) <> '' ORDER BY LTRIM(RTRIM(vehical_no))", con))
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
                             string v = dr[0] != null ? dr[0].ToString().Trim() : "";
-                            if (!string.IsNullOrEmpty(v))
+                            if (!string.IsNullOrEmpty(v) && unique.Add(v))
                             {
                                 ac.Add(v);
                             }
@@ -959,16 +960,17 @@ namespace login
             try
             {
                 AutoCompleteStringCollection ac = new AutoCompleteStringCollection();
+                HashSet<string> unique = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 using (SqlConnection con = new SqlConnection(db_Connection.connection_string()))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT party FROM measure WHERE party IS NOT NULL AND LTRIM(RTRIM(party)) <> '' ORDER BY party", con))
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT LTRIM(RTRIM(party)) FROM measure WHERE party IS NOT NULL AND LTRIM(RTRIM(party)) <> '' ORDER BY LTRIM(RTRIM(party))", con))
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
                             string p = dr[0] != null ? dr[0].ToString().Trim() : "";
-                            if (!string.IsNullOrEmpty(p))
+                            if (!string.IsNullOrEmpty(p) && unique.Add(p))
                             {
                                 ac.Add(p);
                             }
@@ -1002,16 +1004,17 @@ namespace login
             try
             {
                 AutoCompleteStringCollection ac = new AutoCompleteStringCollection();
+                HashSet<string> unique = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 using (SqlConnection con = new SqlConnection(db_Connection.connection_string()))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT meterial FROM measure WHERE meterial IS NOT NULL AND LTRIM(RTRIM(meterial)) <> '' ORDER BY meterial", con))
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT LTRIM(RTRIM(meterial)) FROM measure WHERE meterial IS NOT NULL AND LTRIM(RTRIM(meterial)) <> '' ORDER BY LTRIM(RTRIM(meterial))", con))
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
                             string m = dr[0] != null ? dr[0].ToString().Trim() : "";
-                            if (!string.IsNullOrEmpty(m))
+                            if (!string.IsNullOrEmpty(m) && unique.Add(m))
                             {
                                 ac.Add(m);
                             }

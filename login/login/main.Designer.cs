@@ -306,7 +306,7 @@ namespace login
             this.lblHeaderSubtitle.Name = "lblHeaderSubtitle";
             this.lblHeaderSubtitle.Size = new System.Drawing.Size(387, 15);
             this.lblHeaderSubtitle.TabIndex = 1;
-            this.lblHeaderSubtitle.Text = "Aarogya Dairy Products Private Limited  |  Electronic Pitless Weighbridge";
+            this.lblHeaderSubtitle.Text = "             Electronic Pitless Weighbridge";
             // 
             // lblLiveClock
             // 

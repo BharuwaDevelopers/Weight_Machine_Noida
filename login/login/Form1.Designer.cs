@@ -1,4 +1,4 @@
-﻿namespace login
+namespace login
 {
     partial class Form1
     {
@@ -83,7 +83,7 @@
             this.lblCompany.Name = "lblCompany";
             this.lblCompany.Size = new System.Drawing.Size(349, 13);
             this.lblCompany.TabIndex = 1;
-            this.lblCompany.Text = "Aarogya Dairy Products Private Limited  |  Electronic Pitless System";
+            this.lblCompany.Text = "Electronic Pitless System";
             // 
             // lblTitle
             // 

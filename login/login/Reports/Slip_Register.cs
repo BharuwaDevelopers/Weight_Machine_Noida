@@ -61,19 +61,23 @@ namespace login.Reports
                         query = $@"SELECT charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
                                    FROM measure 
                                    WHERE [date] >= '{fromStr}' AND [date] <= '{toStr}'
+                                     AND (net_weight IS NOT NULL AND LTRIM(RTRIM(net_weight)) <> '' AND net_weight <> 'NULL')
                                    ORDER BY slip_no DESC";
                     }
                     else
                     {
                         query = @"SELECT TOP 500 charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
                                   FROM measure 
+                                  WHERE (net_weight IS NOT NULL AND LTRIM(RTRIM(net_weight)) <> '' AND net_weight <> 'NULL')
                                   ORDER BY slip_no DESC";
                     }
 
                     using (System.Data.SqlClient.SqlDataAdapter sda = new System.Data.SqlClient.SqlDataAdapter(query, con))
                     {
+                        this.weight_bridgeDataSet1.EnforceConstraints = false;
                         this.weight_bridgeDataSet1.measure.Clear();
                         sda.Fill(this.weight_bridgeDataSet1.measure);
+                        this.weight_bridgeDataSet1.EnforceConstraints = false;
                     }
                 }
                 ApplyFilter();
@@ -106,16 +110,19 @@ namespace login.Reports
                     string safe = text.Replace("'", "''");
                     string query = $@"SELECT TOP 500 charges, date, meterial, mod_by, mod_date, net_weight, party, remarks, slip_no, tire_weight, token_no, user_name, vehical_no, vehical_type, weight 
                                      FROM measure 
-                                     WHERE slip_no LIKE '%{safe}%' OR vehical_no LIKE '%{safe}%' OR party LIKE '%{safe}%' OR meterial LIKE '%{safe}%'
+                                     WHERE (slip_no LIKE '%{safe}%' OR vehical_no LIKE '%{safe}%' OR party LIKE '%{safe}%' OR meterial LIKE '%{safe}%')
+                                       AND (net_weight IS NOT NULL AND LTRIM(RTRIM(net_weight)) <> '' AND net_weight <> 'NULL')
                                      ORDER BY slip_no DESC";
 
                     using (System.Data.SqlClient.SqlDataAdapter sda = new System.Data.SqlClient.SqlDataAdapter(query, con))
                     {
+                        this.weight_bridgeDataSet1.EnforceConstraints = false;
                         this.weight_bridgeDataSet1.measure.Clear();
                         sda.Fill(this.weight_bridgeDataSet1.measure);
+                        this.weight_bridgeDataSet1.EnforceConstraints = false;
                     }
                 }
-                measureBindingSource.Filter = "";
+                ApplyFilter();
                 UpdateSummaryMetrics();
             }
             catch (Exception ex)
@@ -374,6 +381,7 @@ namespace login.Reports
             try
             {
                 List<string> filters = new List<string>();
+                filters.Add("(net_weight IS NOT NULL AND net_weight <> '' AND net_weight <> 'NULL')");
 
                 if (!string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
@@ -393,7 +401,7 @@ namespace login.Reports
                     filters.Add($"vehical_no LIKE '%{veh}%'");
                 }
 
-                measureBindingSource.Filter = filters.Count > 0 ? string.Join(" AND ", filters) : "";
+                measureBindingSource.Filter = string.Join(" AND ", filters);
                 UpdateSummaryMetrics();
             }
             catch (Exception ex)
@@ -410,7 +418,6 @@ namespace login.Reports
             chkUseDate.Checked = false;
             dtpFrom.Value = DateTime.Now;
             dtpTo.Value = DateTime.Now;
-            measureBindingSource.Filter = "";
             LoadData();
         }
 

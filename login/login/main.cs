@@ -108,7 +108,7 @@ namespace login
             string rawVeh = Vehical_box.Text != null ? Vehical_box.Text.Trim().ToUpper() : "";
             if (string.IsNullOrEmpty(rawVeh))
             {
-                MessageBox.Show("Please Enter Vehical No");
+                MessageBox.Show("Please Enter Vehicle No.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Vehical_box.Focus();
                 return;
             }
@@ -119,6 +119,27 @@ namespace login
             // If slipno_box is empty, this is a NEW slip (1st weighment)
             if (string.IsNullOrEmpty(currentSlipNo))
             {
+                // 1st weighment: Gross Weight is mandatory
+                string grossRaw1 = weight_box.Text != null ? weight_box.Text.Trim() : "";
+                if (string.IsNullOrEmpty(grossRaw1))
+                {
+                    MessageBox.Show("Please Enter Gross Weight before saving.", "Gross Weight Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    weight_box.Focus();
+                    return;
+                }
+                int grossCheck;
+                if (!int.TryParse(grossRaw1, out grossCheck))
+                {
+                    MessageBox.Show("Gross Weight must be a valid number.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    weight_box.Focus();
+                    return;
+                }
+                if (grossCheck <= 0)
+                {
+                    MessageBox.Show("Gross Weight cannot be Zero or negative. Please enter a valid weight.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    weight_box.Focus();
+                    return;
+                }
 
                 // Check if this vehicle already has a pending slip
                 try
@@ -244,14 +265,58 @@ namespace login
             }
             else
             {
-                // 2nd weighment: Update existing slip
+                // 2nd weighment: Update existing slip — both weights required
+                string grossRaw2 = weight_box.Text != null ? weight_box.Text.Trim() : "";
+                string tareRaw2 = tire_weight_box.Text != null ? tire_weight_box.Text.Trim() : "";
+
+                if (string.IsNullOrEmpty(grossRaw2))
+                {
+                    MessageBox.Show("Please Enter Gross Weight before updating.", "Gross Weight Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    weight_box.Focus();
+                    return;
+                }
+                if (string.IsNullOrEmpty(tareRaw2))
+                {
+                    MessageBox.Show("Please Enter Tare Weight before updating.", "Tare Weight Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    tire_weight_box.Focus();
+                    return;
+                }
+
                 int grossVal = 0;
                 int tareVal = 0;
-                int.TryParse(weight_box.Text.Trim(), out grossVal);
-                int.TryParse(tire_weight_box.Text.Trim(), out tareVal);
+                if (!int.TryParse(grossRaw2, out grossVal))
+                {
+                    MessageBox.Show("Gross Weight must be a valid number.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    weight_box.Focus();
+                    return;
+                }
+                if (grossVal <= 0)
+                {
+                    MessageBox.Show("Gross Weight cannot be Zero or negative. Please enter a valid weight.", "Invalid Gross Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    weight_box.Focus();
+                    return;
+                }
+                if (!int.TryParse(tareRaw2, out tareVal))
+                {
+                    MessageBox.Show("Tare Weight must be a valid number.", "Invalid Tare Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    tire_weight_box.Focus();
+                    return;
+                }
+                if (tareVal <= 0)
+                {
+                    MessageBox.Show("Tare Weight cannot be Zero or negative. Please enter a valid weight.", "Invalid Tare Weight", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    tire_weight_box.Focus();
+                    return;
+                }
+                if (tareVal > grossVal)
+                {
+                    MessageBox.Show("Tare Weight (" + tareVal + ") cannot be greater than Gross Weight (" + grossVal + ").",
+                        "Weight Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    tire_weight_box.Focus();
+                    return;
+                }
 
                 int net_weight = grossVal - tareVal;
-                if (net_weight < 0) net_weight = 0;
                 net_weight_box.Text = net_weight.ToString();
 
                 DateTime curr_date = DateTime.Now;

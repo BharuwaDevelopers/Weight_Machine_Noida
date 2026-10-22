@@ -47,11 +47,6 @@ namespace login
 
             InitializeComponent();
 
-            // b = LISTNER.load_data;
-
-            new Thread(crr_weight).Start();
-            //weight_box.Text = b;
-
 
         }
 
@@ -87,7 +82,7 @@ namespace login
             RefreshMaterialAutoComplete();
             this.Vehical_box.Leave += new System.EventHandler(this.Vehical_box_Leave);
             date_box.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            new Thread(crr_weight).Start();
+            StartWeightTimer();
         }
 
         private void weight_box_TextChanged(object sender, EventArgs e)
@@ -716,34 +711,42 @@ namespace login
 
         }
 
-        void crr_weight()
+        private System.Windows.Forms.Timer _weightTimer;
+
+        private void StartWeightTimer()
         {
-            try
+            if (_weightTimer == null)
             {
-                if (InvokeRequired)
+                _weightTimer = new System.Windows.Forms.Timer();
+                _weightTimer.Interval = 250;
+                _weightTimer.Tick += (s, e) =>
                 {
-                    for (int i = 1; i > 0; i++)
+                    try
                     {
-                        this.BeginInvoke((MethodInvoker)delegate ()
+                        if (this.IsDisposed || !this.IsHandleCreated)
+                            return;
+
+                        string currentVal = string.IsNullOrEmpty(LISTNER.ld_data) ? "0" : LISTNER.ld_data.Trim();
+                        if (cuttent_weight_box.Text != currentVal)
                         {
-                            string currentVal = string.IsNullOrEmpty(LISTNER.ld_data) ? "0" : LISTNER.ld_data.ToString();
                             cuttent_weight_box.Text = currentVal;
                             cuttent_weight_box.SelectAll();
                             cuttent_weight_box.SelectionAlignment = HorizontalAlignment.Center;
                             cuttent_weight_box.DeselectAll();
-                        });
-                        Thread.Sleep(500);
+                        }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Weight timer error: " + ex.Message);
+                    }
+                };
+                _weightTimer.Start();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("ex" + ex);
-            }
+        }
 
-
-
-
+        void crr_weight()
+        {
+            StartWeightTimer();
         }
 
         private void Vehical_box_KeyDown(object sender, KeyEventArgs e)
@@ -1546,10 +1549,17 @@ namespace login
 
         private void main_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_weightTimer != null)
+            {
+                _weightTimer.Stop();
+                _weightTimer.Dispose();
+                _weightTimer = null;
+            }
             if (_clockTimer != null)
             {
                 _clockTimer.Stop();
                 _clockTimer.Dispose();
+                _clockTimer = null;
             }
             Environment.Exit(0);
             Application.Exit();

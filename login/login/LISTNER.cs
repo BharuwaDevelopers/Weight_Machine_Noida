@@ -91,6 +91,9 @@ namespace login.Serial
         {
             try
             {
+                if (this.IsDisposed || !this.IsHandleCreated)
+                    return;
+
                 if (this.InvokeRequired)
                 {
                     this.BeginInvoke(new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved), sender, e);
@@ -136,7 +139,7 @@ namespace login.Serial
             }
             catch (Exception EX)
             {
-                MessageBox.Show("exception: " + EX.Message);
+                Console.WriteLine("LISTNER serial receive error: " + EX.Message);
             }
         }
 

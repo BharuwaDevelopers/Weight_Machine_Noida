@@ -1,4 +1,4 @@
-﻿
+
 using System;
 
 namespace login.Serial
@@ -264,17 +264,7 @@ namespace login.Serial
 
         private void tbData_TextChanged(object sender, EventArgs e)
         {
-
             load_data = tbData1.Text;
-            Console.WriteLine("2345678765xc"+load_data);
-            
-               
-            main main = new main();
-           // main.update_current_weigth(load_data);
-            Console.WriteLine("chnage value !!!!!" + load_data);
-
-           
-
         }
 
         #endregion
